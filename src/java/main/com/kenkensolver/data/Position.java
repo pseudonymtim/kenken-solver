@@ -1,20 +1,20 @@
 package com.kenkensolver.data;
 
 public final class Position {
-	private final int horizontalPos;
-	private final int verticlePos;
+	private final int rowIndex;
+	private final int colIndex;
 	
-	private Position(int horPos, int verPos) {
-		horizontalPos = horPos;
-		verticlePos = verPos;
-	}
-	
-	public int getHorizontalPos() {
-		return horizontalPos;
+	private Position(int rowIdx, int colIdx) {
+		rowIndex = rowIdx;
+		colIndex = colIdx;
 	}
 
-	public int getVerticlePos() {
-		return verticlePos;
+	public int getRowIndex() {
+		return rowIndex;
+	}
+
+	public int getColIndex() {
+		return colIndex;
 	}
 
 	@Override
@@ -27,13 +27,25 @@ public final class Position {
 		}
 		else {
 			Position pos = (Position)o;
-			return this.horizontalPos == pos.getHorizontalPos()
-					&& this.verticlePos == pos.getVerticlePos();
+			return rowIndex == pos.getRowIndex()
+					&& colIndex == pos.getColIndex();
 		}
 	}
 	
-	public static Position getInstance(int horizontalPos, int verticlePos) {
+	@Override
+	public int hashCode() {
+		String rowStr = String.valueOf(rowIndex);
+		String colStr = String.valueOf(colIndex);
+		return Integer.parseInt(rowStr + colStr);
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + colIndex + "," + rowIndex + ")";
+	}
+	
+	public static Position getInstance(int rowIndex, int colIndex) {
 		// TODO add throw exception here if args are passed in as 0 or negative
-		return new Position(horizontalPos, verticlePos);
+		return new Position(rowIndex, colIndex);
 	}
 }
