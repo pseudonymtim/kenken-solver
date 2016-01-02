@@ -1,5 +1,7 @@
 package com.kenkensolver.data;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public enum Operation {
 	
 	ADD("+") {
@@ -33,8 +35,14 @@ public enum Operation {
 	NONE {
 		@Override
 		public int calc(int... args) {
-			// TODO do some sort of no-op here
 			return args[0];
+		}
+	},
+	
+	UNIQUE {
+		@Override
+		public int calc(int... args) {
+			throw new NotImplementedException();
 		}
 	};
 	

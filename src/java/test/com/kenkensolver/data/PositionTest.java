@@ -2,6 +2,8 @@ package com.kenkensolver.data;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -20,31 +22,35 @@ public class PositionTest {
 	}
 	
 	@Test
-	public void testEqualsWithDifferentPosition1() {
+	public void testEqualsAndHashCodeWithDifferentPosition1() {
 		Position p1 = Position.getInstance(1, 2);
 		Position p2 = Position.getInstance(3, 2);
 		assertFalse(p1.equals(p2));
+		assertNotEquals(p1.hashCode(), p2.hashCode());
 	}
 	
 	@Test
-	public void testEqualsWithDifferentPosition2() {
+	public void testEqualsAndHashCodeWithDifferentPosition2() {
 		Position p1 = Position.getInstance(1, 2);
 		Position p2 = Position.getInstance(1, 4);
 		assertFalse(p1.equals(p2));
+		assertNotEquals(p1.hashCode(), p2.hashCode());
 	}
 	
 	@Test
-	public void testEqualsWithDifferentPosition3() {
+	public void testEqualsAndHashCodeWithDifferentPosition3() {
 		Position p1 = Position.getInstance(1, 2);
 		Position p2 = Position.getInstance(3, 4);
 		assertFalse(p1.equals(p2));
+		assertNotEquals(p1.hashCode(), p2.hashCode());
 	}
 	
 	@Test
-	public void testEqualsWithSamePosition() {
+	public void testEqualsAndHashCodeWithSamePosition() {
 		Position p1 = Position.getInstance(1, 2);
 		Position p2 = Position.getInstance(1, 2);
 		assertTrue(p1.equals(p2));
+		assertEquals(p1.hashCode(), p2.hashCode());
 	}
 
 }

@@ -1,8 +1,9 @@
 package com.kenkensolver;
 
-import com.kenkensolver.data.KenKenPuzzle;
+import com.kenkensolver.data.Puzzle;
 import com.kenkensolver.data.Operation;
 import com.kenkensolver.data.Position;
+import com.kenkensolver.solver.BasicSolver;
 
 public class Application {
 	
@@ -13,7 +14,7 @@ public class Application {
 		// verify that the partial solution is correct within the constraints
 		//
 		
-		KenKenPuzzle puzzleBuilder = new KenKenPuzzle.Builder()
+		Puzzle puzzle = new Puzzle.Builder()
 				.addGroup(36, Operation.MULTIPLY, 
 						Position.getInstance(0, 0),
 						Position.getInstance(1, 0),
@@ -69,7 +70,14 @@ public class Application {
 						Position.getInstance(5, 5))
 				.build();
 		
-		System.out.println(puzzleBuilder.toStringAsciiArt());
+		System.out.println(puzzle.toStringAscii());
+		
+		BasicSolver solver = new BasicSolver();
+		
+		solver.solve(puzzle);
+		
+		System.out.println(puzzle.toStringAscii());
+		
 		
 		// get the builder
 		// set the size

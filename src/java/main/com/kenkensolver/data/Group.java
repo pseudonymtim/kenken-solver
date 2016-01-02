@@ -1,24 +1,30 @@
 package com.kenkensolver.data;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Group {
-	private Set<Position> positions;
-	private int result;
-	private Operation operation;
+	private final int result;
+	private final Operation operation;
+	private final Set<Position> positions;
+	private final Set<Set<Integer>> possibleSolutions;
 	
-	private Group() { }
-	
-	private Group(int res, Operation op, Set<Position> positions) {
-		this.result = res;
-		this.operation = op;
-		this.positions = positions;
+	public Group(int res, Operation op, Set<Position> pos) {
+		result = res;
+		operation = op;
+		positions = pos;
+		possibleSolutions = new HashSet<Set<Integer>>();;
 	}
 	
-	public Set<Position> getPositions() {
-		return positions;
+	public Group(int res, Operation op, Position... pos) {
+		result = res;
+		operation = op;
+		positions = new HashSet<Position>();
+		possibleSolutions = new HashSet<Set<Integer>>();
+		
+		for (Position p : pos) {
+			positions.add(p);
+		}
 	}
 
 	public int getResult() {
@@ -28,47 +34,17 @@ public class Group {
 	public Operation getOperation() {
 		return operation;
 	}
+	
+	public Set<Position> getPositions() {
+		return positions;
+	}
 
-	public static class Builder {
-		private Set<Position> positions;;
-		private int result;
-		private Operation operation;
-		
-		public Builder() {
-			positions = new HashSet<Position>();
-			result = -1;
-			operation = Operation.NONE;
-		}
-		
-		public Builder(Group group) {
-			positions = group.getPositions();
-			result = group.getResult();
-			operation = group.getOperation();
-		}
-		
-		public Builder result(int result) {
-			this.result = result;
-			return this;
-		}
-		
-		public Builder operation(Operation op) {
-			this.operation = op;
-			return this;
-		}
-		
-		public Builder positions(Position... positions) {
-			this.positions.addAll(Arrays.asList(positions));
-			return this;
-		}
-		
-		public Builder removePosition(Position pos) {
-			positions.remove(pos);
-			return this;
-		}
-		
-		public Group build() {
-			return new Group(result, operation, positions);
-		}
+	public Set<Set<Integer>> getPossibleSolutions() {
+		return possibleSolutions;
+	}
+	
+	public void removePosition(Position p) {
+		positions.remove(p);
 	}
 
 	public Position getMostTopLeftPosition() {
