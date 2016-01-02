@@ -8,38 +8,81 @@ public class OperationTest {
 
 	@Test
 	public void testAdd() {
-		Operation op = Operation.ADD;
-		assertEquals(7, op.calc(3,2,1,1));
+		assertTrue(Operation.ADD.isValidSolution(7, 3,2,1,1));
+		assertTrue(Operation.ADD.isValidSolution(7, 1,2,3,1));
+		assertTrue(Operation.ADD.isValidSolution(7, 3,4));
+		assertTrue(Operation.ADD.isValidSolution(7, 7));
+		
+		assertFalse(Operation.ADD.isValidSolution(8, 3,2,1,1));
+		assertFalse(Operation.ADD.isValidSolution(8, 1,2,3,1));
+		assertFalse(Operation.ADD.isValidSolution(8, 3,4));
+		assertFalse(Operation.ADD.isValidSolution(8, 7));
 	}
 	
 	@Test
 	public void testSubtract() {
-		Operation op = Operation.SUBTRACT;
-		assertEquals(5, op.calc(6,1));
+		assertTrue(Operation.SUBTRACT.isValidSolution(5, 6,1));
+		assertTrue(Operation.SUBTRACT.isValidSolution(5, 1,6));
+		assertTrue(Operation.SUBTRACT.isValidSolution(5, 2,9,1,1));
+		assertTrue(Operation.SUBTRACT.isValidSolution(5, 5));
+		
+		assertFalse(Operation.SUBTRACT.isValidSolution(6, 6,1));
+		assertFalse(Operation.SUBTRACT.isValidSolution(6, 1,6));
+		assertFalse(Operation.SUBTRACT.isValidSolution(6, 2,9,1,1));
+		assertFalse(Operation.SUBTRACT.isValidSolution(6, 5));
 	}
 	
 	@Test
 	public void testMultiply() {
-		Operation op = Operation.MULTIPLY;
-		assertEquals(24, op.calc(3,4,2));
+		assertTrue(Operation.MULTIPLY.isValidSolution(24, 3,4,2));
+		assertTrue(Operation.MULTIPLY.isValidSolution(24, 12,2));
+		assertTrue(Operation.MULTIPLY.isValidSolution(24, 4,2,3,1,1,1));
+		assertTrue(Operation.MULTIPLY.isValidSolution(24, 24));
+		
+		assertFalse(Operation.MULTIPLY.isValidSolution(23, 3,4,2));
+		assertFalse(Operation.MULTIPLY.isValidSolution(23, 12,2));
+		assertFalse(Operation.MULTIPLY.isValidSolution(23, 4,2,3,1,1,1));
+		assertFalse(Operation.MULTIPLY.isValidSolution(23, 24));
 	}
 	
 	@Test
-	public void testDivideWholeNumber() {
-		Operation op = Operation.DIVIDE;
-		assertEquals(2, op.calc(6,3));
+	public void testDivide() {
+		assertTrue(Operation.DIVIDE.isValidSolution(2, 6,3,1));
+		assertTrue(Operation.DIVIDE.isValidSolution(2, 3,1,6));
+		assertTrue(Operation.DIVIDE.isValidSolution(2, 2,4));
+		assertTrue(Operation.DIVIDE.isValidSolution(2, 2));
+		
+		assertFalse(Operation.DIVIDE.isValidSolution(3, 6,3,1));
+		assertFalse(Operation.DIVIDE.isValidSolution(3, 3,1,6));
+		assertFalse(Operation.DIVIDE.isValidSolution(3, 2,4));
+		assertFalse(Operation.DIVIDE.isValidSolution(3, 2));
+		
+		assertFalse(Operation.DIVIDE.isValidSolution(2, 5,3));
+		assertTrue(Operation.DIVIDE.isValidSolution(1, 1,1));
+		assertFalse(Operation.DIVIDE.isValidSolution(3, 7,2));
+		assertFalse(Operation.DIVIDE.isValidSolution(2, 9,2,2));
 	}
 	
 	@Test
-	public void testDivideNonZeroRemainder() {
-		Operation op = Operation.DIVIDE;
-		assertEquals(0, op.calc(6,4));
+	public void testNone() {
+		assertTrue(Operation.NONE.isValidSolution(2, 2));
+		assertTrue(Operation.NONE.isValidSolution(2, 3));
+		assertTrue(Operation.NONE.isValidSolution(-1, 4));
+		
+		assertFalse(Operation.NONE.isValidSolution(2, 2,3));
+		assertFalse(Operation.NONE.isValidSolution(3, 6,3,1));
 	}
 	
 	@Test
-	public void testDivideNonZeroRemainderWith5Args() {
-		Operation op = Operation.DIVIDE;
-		assertEquals(0, op.calc(12,4,2,1,1));
+	public void testUnique() {
+		assertTrue(Operation.UNIQUE.isValidSolution(2, 2,3,4));
+		assertTrue(Operation.UNIQUE.isValidSolution(-1, 2,5,4));
+		assertTrue(Operation.UNIQUE.isValidSolution(0, 1,6,2,7,3,8));
+		assertTrue(Operation.UNIQUE.isValidSolution(2, 1));
+		
+		assertFalse(Operation.UNIQUE.isValidSolution(2, 2,3,2));
+		assertFalse(Operation.UNIQUE.isValidSolution(-1, 5,5,4));
+		assertFalse(Operation.UNIQUE.isValidSolution(0, 1,6,1,1,1,8));
 	}
 	
 }

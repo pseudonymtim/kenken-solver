@@ -1,48 +1,53 @@
 package com.kenkensolver.data;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.util.HashSet;
+import java.util.Set;
 
 public enum Operation {
 	
 	ADD("+") {
 		@Override
-		public int calc(int... args) {
-			return calc((a, b) -> a + b, args);
+		public boolean isValidSolution(int result, int... args) {
+			return isValidSolution(result, this, (a, b) -> a + b, args);
 		}
 	},
 	
 	SUBTRACT("-") {
 		@Override
-		public int calc(int... args) {
-			return calc((a, b) -> a - b, args);
+		public boolean isValidSolution(int result, int... args) {
+			return isValidSolution(result, this, (a, b) -> a - b, args);
 		}
 	},
 	
 	MULTIPLY("x") {
 		@Override
-		public int calc(int... args) {
-			return calc((a, b) -> a * b, args);
+		public boolean isValidSolution(int result, int... args) {
+			return isValidSolution(result, this, (a, b) -> a * b, args);
 		}
 	},
 	
 	DIVIDE("/") {
 		@Override
-		public int calc(int... args) {
-			return calc((a, b) -> (a/b)*b==a ? a/b : 0, args);
+		public boolean isValidSolution(int result, int... args) {
+			return isValidSolution(result, this, (a, b) -> (a/b)*b==a ? a/b : 0, args);
 		}
 	},
 	
 	NONE {
 		@Override
-		public int calc(int... args) {
-			return args[0];
+		public boolean isValidSolution(int result, int... args) {
+			return args.length == 1;
 		}
 	},
 	
 	UNIQUE {
 		@Override
-		public int calc(int... args) {
-			throw new NotImplementedException();
+		public boolean isValidSolution(int result, int... args) {
+			Set<Integer> argSet = new HashSet<Integer>();
+			for (int i : args) {
+				argSet.add(i);
+			}
+			return args.length == argSet.size();
 		}
 	};
 	
@@ -54,21 +59,40 @@ public enum Operation {
 		operatorStr = op;
 	}
  
- 	public abstract int calc(int... args);
+ 	public abstract boolean isValidSolution(int result, int... args);
  	
  	@Override
  	public String toString() {
  		return operatorStr;
  	}
  	
- 	// TODO - why does this have to be a static method
-	private static int calc(OpFunction func, int... args) {
-		// do some type of null object checking and array checking
-		int result = args[0];
-		for (int i=1; i<args.length; i++) {
-			result = func.apply(result, args[i]);
+	private static boolean isValidSolution(int result, Operation op, OpFunction func, int... args) {
+		int[] values = args.clone();
+		
+		if (Operation.SUBTRACT.equals(op) || Operation.DIVIDE.equals(op)) {
+			// Argument order matters for these operations
+			
+			// Find largest argument
+			int largestIndex = 0;
+			for (int i=0; i<values.length; i++) {
+				if (values[i] >= values[largestIndex]) {
+					largestIndex = i;
+				}
+			}
+			
+			// Put largest element first
+			int temp = values[0];
+			values[0] = values[largestIndex];
+			values[largestIndex] = temp;
 		}
-		return result;
+		
+		// Perform the operation on the arguments
+		int actualResult = values[0];
+		for (int i=1; i<values.length; i++) {
+			actualResult = func.apply(actualResult, values[i]);
+		}
+		
+		return result == actualResult;
 	}
 	
 	@FunctionalInterface

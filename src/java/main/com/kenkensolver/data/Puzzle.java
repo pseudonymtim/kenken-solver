@@ -236,6 +236,8 @@ public class Puzzle {
 			}
 			bespokeGroups.removeAll(groupsToRemove);
 			
+			// TODO: There should be more validation of the puzzle here, not sure what though
+			
 			Puzzle puzzle = null;
 			
 			if (positionCellMap.size() != size*size) {
