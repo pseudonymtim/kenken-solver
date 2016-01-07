@@ -1,6 +1,8 @@
 package com.kenkensolver.data;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Cell {
@@ -32,6 +34,16 @@ public class Cell {
 
 	public Set<Integer> getPossibleValues() {
 		return possibleValues;
+	}
+
+	public Set<List<Integer>> getPossibleValuesAsSetOfLists() {
+		Set<List<Integer>> posVals = new HashSet<List<Integer>>();
+		for (Integer possibleValue : possibleValues) {
+			List<Integer> newList = new ArrayList<Integer>();
+			newList.add(possibleValue);
+			posVals.add(newList);
+		}
+		return posVals;
 	}
 
 	public Group getBespokeGroup() {
@@ -76,6 +88,21 @@ public class Cell {
 				}
 			}
 		}
+	}
+	
+	public boolean assignCellValue() {
+		boolean change = false;
+		if (possibleValues.size() == 1 && value == NO_VALUE) {
+			change = true;
+			for (Integer cellVal : possibleValues) {
+				value = cellVal.intValue();
+			}
+		}
+		return change;
+	}
+
+	public boolean isSolved() {
+		return value != NO_VALUE;
 	}
 
 	/**

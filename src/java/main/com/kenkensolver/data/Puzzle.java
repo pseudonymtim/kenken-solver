@@ -52,6 +52,34 @@ public class Puzzle {
 		return positionCellMap;
 	}
 	
+	public Set<Cell> getAllCells() {
+		Set<Cell> cells = new HashSet<Cell>();
+		cells.addAll(positionCellMap.values());
+		return cells;
+	}
+
+	public Set<Cell> getAllCellsInSameRow(Cell cell) {
+		int rowIndex = cell.getPosition().getRowIndex();
+		Group rowGroup = rowGroupMap.get(rowIndex);
+		Set<Position> rowPositions = rowGroup.getPositions();
+		Set<Cell> rowCells = new HashSet<Cell>();
+		for (Position p : rowPositions) {
+			rowCells.add(positionCellMap.get(p));
+		}
+		return rowCells;
+	}
+
+	public Set<Cell> getAllCellsInSameColumn(Cell cell) {
+		int colIndex = cell.getPosition().getColIndex();
+		Group colGroup = columnGroupMap.get(colIndex);
+		Set<Position> colPositions = colGroup.getPositions();
+		Set<Cell> colCells = new HashSet<Cell>();
+		for (Position p : colPositions) {
+			colCells.add(positionCellMap.get(p));
+		}
+		return colCells;
+	}
+	
 	public String toStringAscii() {
 		StringBuffer asciiStr= new StringBuffer();
 		
@@ -177,13 +205,13 @@ public class Puzzle {
 			Group newBespokeGroup = new Group(result, operation, positions);
 			bespokeGroups.add(newBespokeGroup);
 			
-			//figure out if size needs to be changed
 			for (Position pos : positions) {
 				
-				// Update number of rows and columns
+				// Update size if required
 				size = Math.max(size, pos.getRowIndex() + 1);
 				size = Math.max(size, pos.getColIndex() + 1);
 
+				// Figure out if position has already been assigned to a group
 				if (positionCellMap.containsKey(pos)) {
 					// Position already specified, reassign cell to new group
 					Cell cell = positionCellMap.get(pos);
@@ -191,11 +219,15 @@ public class Puzzle {
 					// Remove this position from the cells current group 
 					Group oldBespokeGroup = cell.getBespokeGroup();
 					oldBespokeGroup.removePosition(pos);
+					oldBespokeGroup.removeCell(cell);
 					
 					// Assign cell to have new bespoke group
 					cell.setBespokeGroup(newBespokeGroup);
+					newBespokeGroup.addCell(cell);
 				}
 				else {
+					// New position being specified
+					
 					// Get the row group
 					Group rowGroup = null;
 					if (rowGroupMap.containsKey(pos.getRowIndex())) {
@@ -219,6 +251,7 @@ public class Puzzle {
 					// Create the new cell
 					Cell newCell = new Cell(pos, newBespokeGroup, rowGroup, columnGroup);
 					positionCellMap.put(pos, newCell);
+					newBespokeGroup.addCell(newCell);
 				}
 				
 			}
@@ -237,6 +270,9 @@ public class Puzzle {
 			bespokeGroups.removeAll(groupsToRemove);
 			
 			// TODO: There should be more validation of the puzzle here, not sure what though
+			
+			// Validation: All bespoke groups with NONE operation only have one position
+			// Validation: All row and col groups have 'size' number of positions
 			
 			Puzzle puzzle = null;
 			

@@ -1,6 +1,7 @@
 package com.kenkensolver.data;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public enum Operation {
@@ -60,6 +61,16 @@ public enum Operation {
 	}
  
  	public abstract boolean isValidSolution(int result, int... args);
+ 	
+ 	public boolean isValidSolution(int result, List<Integer> args) {
+ 		int[] argArray = new int[args.size()];
+ 		int i = 0;
+ 		for (Integer arg : args) {
+ 			argArray[i] = arg.intValue();
+ 			i++;
+ 		}
+ 		return isValidSolution(result, argArray);
+ 	}
  	
  	@Override
  	public String toString() {
