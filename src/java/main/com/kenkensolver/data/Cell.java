@@ -4,32 +4,34 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 
 public class Cell {
-	private static final int NO_VALUE = -1;
+	private static int ID_COUNTER = 100;
+	
 	private final Position position;
 	private final Set<Integer> possibleValues;
 	
-	private int value;
-	private Group bespokeGroup;
+	private int id;
+	private BespokeGroup bespokeGroup;
 	private Group rowGroup;
 	private Group columnGroup;
 	
-	public Cell(Position pos, Group bg, Group rg, Group cg) {
+	public Cell(Position pos, BespokeGroup bg, Group rowGroup2, Group columnGroup2) {
+		id = ID_COUNTER++;
 		position = pos;
-		value = NO_VALUE;
 		possibleValues = new HashSet<Integer>();
 		bespokeGroup = bg;
-		rowGroup = rg;
-		columnGroup = cg;
+		rowGroup = rowGroup2;
+		columnGroup = columnGroup2;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public Position getPosition() {
 		return position;
-	}
-
-	public int getValue() {
-		return value;
 	}
 
 	public Set<Integer> getPossibleValues() {
@@ -46,7 +48,7 @@ public class Cell {
 		return posVals;
 	}
 
-	public Group getBespokeGroup() {
+	public BespokeGroup getBespokeGroup() {
 		return bespokeGroup;
 	}
 
@@ -58,7 +60,7 @@ public class Cell {
 		return columnGroup;
 	}
 	
-	public void setBespokeGroup(Group bespokeGroup) {
+	public void setBespokeGroup(BespokeGroup bespokeGroup) {
 		this.bespokeGroup = bespokeGroup;
 	}
 
@@ -70,39 +72,37 @@ public class Cell {
 		this.columnGroup = columnGroup;
 	}
 
-	public void removeValueFromPossible(int imposVal) {
-		if (possibleValues.contains(imposVal)) {
+	public void removeValueFromPossible(int impossibleVal) {
+		if (possibleValues.contains(impossibleVal)) {
 			// Check if the last remaining possible value is being removed
 			if (possibleValues.size() <= 1) {
-				System.out.println("ERROR: Trying to remove the last possible value " + imposVal
+				System.out.println("ERROR: Trying to remove the last possible value " + impossibleVal
 						+ " for cell at position " + position.toString());
 				throw new IllegalStateException();
 			}
 			
-			possibleValues.remove(imposVal);
-			
-			// If there's only one value left then assign it as the cell's value
-			if (possibleValues.size() == 1 && value == NO_VALUE) {
-				for (Integer i : possibleValues) {
-					value = i;
-				}
-			}
+			possibleValues.remove(impossibleVal);
 		}
-	}
-	
-	public boolean assignCellValue() {
-		boolean change = false;
-		if (possibleValues.size() == 1 && value == NO_VALUE) {
-			change = true;
-			for (Integer cellVal : possibleValues) {
-				value = cellVal.intValue();
-			}
-		}
-		return change;
 	}
 
 	public boolean isSolved() {
-		return value != NO_VALUE;
+		return possibleValues.size() == 1;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		StringJoiner sj = new StringJoiner(",");
+		for (Integer possibleValue : possibleValues) {
+			sj.add(possibleValue.toString());
+		}
+		
+		sb.append("Cell=" + id);
+		sb.append(" Pos=" + position);
+		sb.append(" PossVals={" + sj.toString() + "}");
+		
+		return sb.toString();
 	}
 
 	/**
@@ -118,9 +118,11 @@ public class Cell {
 		
 		// is string most top, and if tie, most left?
 		if (lineInCell == 1 && position.equals(bespokeGroup.getMostTopLeftPosition())) {
-			cellLine = " " + bespokeGroup.getResult() + bespokeGroup.getOperation() + cellLine;
+			cellLine = " " + bespokeGroup.getResult() + 
+					bespokeGroup.getOperation().getOperationSymbol() + cellLine;
 		}
-		else if (value > 0 && lineInCell == (cellHeight/2)+1) {
+		else if (lineInCell == (cellHeight/2)+1 && isSolved()) {
+			int value = 0;
 			String valueStr = String.valueOf(value);
 			String whitespacePadding = cellLine.substring(
 					0, Math.max(0, (cellWidth-valueStr.length())/2));

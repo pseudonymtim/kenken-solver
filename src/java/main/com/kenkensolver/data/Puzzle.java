@@ -1,7 +1,10 @@
 package com.kenkensolver.data;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,23 +19,29 @@ public class Puzzle {
 	private static final char THIN_CORNER = '+';
 	
 	private int size;
-	private Set<Group> bespokeGroups;
+	private Set<BespokeGroup> bespokeGroups;
 	private Map<Integer, Group> rowGroupMap;
 	private Map<Integer, Group> columnGroupMap;
 	private Map<Position, Cell> positionCellMap;
+	private Cell[][] cellArray;
 	
 	private Puzzle() { }
 	
-	private Puzzle(int s, Set<Group> bg, Map<Integer, Group> rgm, 
+	private Puzzle(int s, Set<BespokeGroup> bg, Map<Integer, Group> rgm, 
 			Map<Integer, Group> cgm, Map<Position, Cell> pcm) {
 		size = s;
 		bespokeGroups = bg;
 		rowGroupMap = rgm;
 		columnGroupMap = cgm;
 		positionCellMap = pcm;
+		
+		cellArray = new Cell[s][s];
+		for (Position p : positionCellMap.keySet()) {
+			cellArray[p.getRowIndex()][p.getColIndex()] = positionCellMap.get(p);
+		}
 	}
 	
-	public Set<Group> getBespokeGroups() {
+	public Set<BespokeGroup> getBespokeGroups() {
 		return bespokeGroups;
 	}
 
@@ -60,30 +69,62 @@ public class Puzzle {
 
 	public Set<Cell> getAllCellsInSameRow(Cell cell) {
 		int rowIndex = cell.getPosition().getRowIndex();
-		Group rowGroup = rowGroupMap.get(rowIndex);
-		Set<Position> rowPositions = rowGroup.getPositions();
-		Set<Cell> rowCells = new HashSet<Cell>();
-		for (Position p : rowPositions) {
-			rowCells.add(positionCellMap.get(p));
-		}
-		return rowCells;
+		return rowGroupMap.get(rowIndex).getCells();
 	}
-
+	
 	public Set<Cell> getAllCellsInSameColumn(Cell cell) {
-		int colIndex = cell.getPosition().getColIndex();
-		Group colGroup = columnGroupMap.get(colIndex);
-		Set<Position> colPositions = colGroup.getPositions();
-		Set<Cell> colCells = new HashSet<Cell>();
-		for (Position p : colPositions) {
-			colCells.add(positionCellMap.get(p));
+		int columnIndex = cell.getPosition().getColIndex();
+		return columnGroupMap.get(columnIndex).getCells();
+	}
+	
+	public String toStringDetailed() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("----------------------------------------------\n");
+		sb.append("Puzzle Details\n");
+		sb.append("\n");
+		sb.append("Size: " + size + "\n");
+		sb.append("\n");
+		
+		sb.append("Cells (" + positionCellMap.size() + "):" + "\n");
+		List<Position> positions = new ArrayList<Position>();
+		positions.addAll(positionCellMap.keySet());
+		Collections.sort(positions);
+		for (Position pos : positions) {
+			sb.append("  " + positionCellMap.get(pos) + "\n");
 		}
-		return colCells;
+		sb.append("\n");
+		
+		sb.append("Bespoke Groups (" + bespokeGroups.size() + "):\n");
+		for (BespokeGroup g : bespokeGroups) {
+			sb.append("  " + g.toString() + "\n");
+		}
+		sb.append("\n");
+		
+		sb.append("Row Groups (" + rowGroupMap.size() + "):\n");
+		for (int i=0; i<size; i++) {
+			if (rowGroupMap.containsKey(i)) {
+				sb.append("  Row:" + i + " " + rowGroupMap.get(i).toString() + "\n");
+			}
+		}
+		sb.append("\n");
+		
+		sb.append("Column Groups (" + columnGroupMap.size() + "):\n");
+		for (int i=0; i<size; i++) {
+			if (columnGroupMap.containsKey(i)) {
+				sb.append("  Column:" + i + " " + columnGroupMap.get(i).toString() + "\n");
+			}
+		}
+		sb.append("\n");
+		
+		sb.append("----------------------------------------------\n");
+		return sb.toString();
 	}
 	
 	public String toStringAscii() {
 		StringBuffer asciiStr= new StringBuffer();
 		
-		// Section of code that generates the top boarder line
+		// Generates the top boarder line
 		asciiStr.append(THICK_CORNER);
 		for (int i=0; i<size; i++) {
 			for (int j=0; j<CELL_WIDTH; j++) {
@@ -92,11 +133,6 @@ public class Puzzle {
 			asciiStr.append(THICK_CORNER);
 		}
 		asciiStr.append("\n");
-		
-		Cell[][] cellArray = new Cell[size][size];
-		for (Position p : positionCellMap.keySet()) {
-			cellArray[p.getRowIndex()][p.getColIndex()] = positionCellMap.get(p);
-		}
 		
 		// These loops do the rest of the work
 		for (int currRow=0; currRow<size; currRow++) {
@@ -187,14 +223,14 @@ public class Puzzle {
 	}
 
 	public static class Builder {
-		private Set<Group> bespokeGroups;
+		private Set<BespokeGroup> bespokeGroups;
 		private Map<Integer, Group> rowGroupMap;
 		private Map<Integer, Group> columnGroupMap;
 		private Map<Position, Cell> positionCellMap;
 		private int size;
 		
 		public Builder() {
-			bespokeGroups = new HashSet<Group>();
+			bespokeGroups = new HashSet<BespokeGroup>();
 			rowGroupMap = new HashMap<Integer, Group>();
 			columnGroupMap = new HashMap<Integer, Group>();
 			positionCellMap = new HashMap<Position, Cell>();
@@ -202,7 +238,7 @@ public class Puzzle {
 		}
 		
 		public Builder addGroup(int result, Operation operation, Position... positions) {
-			Group newBespokeGroup = new Group(result, operation, positions);
+			BespokeGroup newBespokeGroup = new BespokeGroup(result, operation);
 			bespokeGroups.add(newBespokeGroup);
 			
 			for (Position pos : positions) {
@@ -214,55 +250,64 @@ public class Puzzle {
 				// Figure out if position has already been assigned to a group
 				if (positionCellMap.containsKey(pos)) {
 					// Position already specified, reassign cell to new group
+					
+					// Get the corresponding cell for that position
 					Cell cell = positionCellMap.get(pos);
+					cell.setBespokeGroup(newBespokeGroup);
+					
+					// Add existing cell to new bespoke group
+					newBespokeGroup.addCell(cell);
 					
 					// Remove this position from the cells current group 
-					Group oldBespokeGroup = cell.getBespokeGroup();
-					oldBespokeGroup.removePosition(pos);
+					BespokeGroup oldBespokeGroup = cell.getBespokeGroup();
 					oldBespokeGroup.removeCell(cell);
-					
-					// Assign cell to have new bespoke group
-					cell.setBespokeGroup(newBespokeGroup);
-					newBespokeGroup.addCell(cell);
 				}
 				else {
 					// New position being specified
-					
-					// Get the row group
-					Group rowGroup = null;
-					if (rowGroupMap.containsKey(pos.getRowIndex())) {
-						rowGroup = rowGroupMap.get(pos.getRowIndex());						
-					}
-					else {
-						rowGroup = new Group(0, Operation.UNIQUE, pos);
-						rowGroupMap.put(pos.getRowIndex(), rowGroup);
-					}
-					
-					// Get the column group
-					Group columnGroup = null;
-					if (columnGroupMap.containsKey(pos.getColIndex())) {
-						columnGroup = columnGroupMap.get(pos.getColIndex());						
-					}
-					else {
-						columnGroup = new Group(0, Operation.UNIQUE, pos);
-						columnGroupMap.put(pos.getColIndex(), rowGroup);
-					}
+					Group rowGroup = getRowGroup(pos);
+					Group columnGroup = getColumnGroup(pos);
 					
 					// Create the new cell
 					Cell newCell = new Cell(pos, newBespokeGroup, rowGroup, columnGroup);
+					
+					// Add cell to position cell map
 					positionCellMap.put(pos, newCell);
+					
+					// Add cell to all appropriate groups
 					newBespokeGroup.addCell(newCell);
+					rowGroup.addCell(newCell);
+					columnGroup.addCell(newCell);
 				}
 				
 			}
 			
 			return this;
 		}
+
+		private Group getColumnGroup(Position pos) {
+			return getOrCreateGroup(columnGroupMap, pos.getColIndex());
+		}
+
+		private Group getRowGroup(Position pos) {
+			return getOrCreateGroup(rowGroupMap, pos.getRowIndex());
+		}
+		
+		private Group getOrCreateGroup(Map<Integer, Group> groupMap, Integer key) {
+			Group g;
+			if (groupMap.containsKey(key)) {
+				g = groupMap.get(key);						
+			}
+			else {
+				g = new Group();
+				groupMap.put(key, g);
+			}
+			return g;
+		}
 		
 		public Puzzle build() {
 			// Remove all groups that do not have any positions assigned to them
-			Set<Group> groupsToRemove = new HashSet<Group>();
-			for (Group bg : bespokeGroups) {
+			Set<BespokeGroup> groupsToRemove = new HashSet<BespokeGroup>();
+			for (BespokeGroup bg : bespokeGroups) {
 				if (bg.getPositions().isEmpty()) {
 					groupsToRemove.add(bg);
 				}

@@ -1,12 +1,11 @@
 package com.kenkensolver.solver;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.kenkensolver.data.BespokeGroup;
 import com.kenkensolver.data.Cell;
-import com.kenkensolver.data.Group;
 import com.kenkensolver.data.Operation;
 import com.kenkensolver.data.Position;
 import com.kenkensolver.data.Puzzle;
@@ -16,23 +15,28 @@ public class BasicSolver implements Solver {
 	@Override
 	public void solve(Puzzle p) {
 		
-		// Hygrate cells with possible values
+		// Hydrate cells with possible values
 		hydrateAllCellsWithPossibleValues(p);
+		
+		System.out.println(p.toStringDetailed());
 		
 		// Get all groups with NONE operator and assign the cell with that value
 		processAllGroupsWithOneCell(p);
 		
+		System.out.println(p.toStringDetailed());
+		
 		// process the groups
 		processGroupsGenSolutions(p);
 		
+		System.out.println(p.toStringDetailed());
+		
 		while (!allCellsSolved(p)) {
 			
-			// At the end of that, assign values for cells that are solved
-			assignCellValues(p);
+			
 		}
 		
 		
-		;
+		
 		
 		
 		
@@ -40,7 +44,7 @@ public class BasicSolver implements Solver {
 
 	private void processGroupsGenSolutions(Puzzle p) {
 		// Go through each group and figure out solutions
-		for (Group bg : p.getBespokeGroups()) {
+		for (BespokeGroup bg : p.getBespokeGroups()) {
 			
 			// Generate all possible soluions for that group
 			bg.generatePossibleSolutions();
@@ -59,23 +63,8 @@ public class BasicSolver implements Solver {
 		
 	}
 
-	/**
-	 * Assigns the value of a cell when only one possible cell value remains.
-	 * @param p
-	 */
-	private void assignCellValues(Puzzle p) {
-		boolean change = false;
-		for (Cell c : p.getAllCells()) {
-			change |= c.assignCellValue();
-		}
-		
-		if (change) {
-			System.out.println(p.toStringAscii());
-		}
-	}
-
 	private void processAllGroupsWithOneCell(Puzzle puzzle) {
-		for (Group bg : puzzle.getBespokeGroups()) {
+		for (BespokeGroup bg : puzzle.getBespokeGroups()) {
 			if (Operation.NONE.equals(bg.getOperation())) {
 				int cellValue = bg.getResult();
 				
@@ -117,6 +106,8 @@ public class BasicSolver implements Solver {
 	}
 	
 	/*
+	 * TODO: Read this...
+	 * 
 	 * GOT IT
 	 * 
 	 * Find possible solution(s) for a group

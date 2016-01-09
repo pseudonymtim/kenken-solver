@@ -1,8 +1,6 @@
 package com.kenkensolver.data;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public enum Operation {
 	
@@ -37,27 +35,20 @@ public enum Operation {
 	NONE {
 		@Override
 		public boolean isValidSolution(int result, int... args) {
-			return args.length == 1;
-		}
-	},
-	
-	UNIQUE {
-		@Override
-		public boolean isValidSolution(int result, int... args) {
-			Set<Integer> argSet = new HashSet<Integer>();
-			for (int i : args) {
-				argSet.add(i);
-			}
-			return args.length == argSet.size();
+			return args.length == 1 && result == args[0];
 		}
 	};
 	
-	private String operatorStr = "";
+	private String operatorSymbol = "";
 	
 	private Operation() { }
 	
 	private Operation(String op) {
-		operatorStr = op;
+		operatorSymbol = op;
+	}
+	
+	public String getOperationSymbol() {
+		return operatorSymbol;
 	}
  
  	public abstract boolean isValidSolution(int result, int... args);
@@ -74,7 +65,7 @@ public enum Operation {
  	
  	@Override
  	public String toString() {
- 		return operatorStr;
+ 		return name();
  	}
  	
 	private static boolean isValidSolution(int result, Operation op, OpFunction func, int... args) {

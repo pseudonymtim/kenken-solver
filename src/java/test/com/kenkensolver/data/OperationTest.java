@@ -73,16 +73,4 @@ public class OperationTest {
 		assertFalse(Operation.NONE.isValidSolution(3, 6,3,1));
 	}
 	
-	@Test
-	public void testUnique() {
-		assertTrue(Operation.UNIQUE.isValidSolution(2, 2,3,4));
-		assertTrue(Operation.UNIQUE.isValidSolution(-1, 2,5,4));
-		assertTrue(Operation.UNIQUE.isValidSolution(0, 1,6,2,7,3,8));
-		assertTrue(Operation.UNIQUE.isValidSolution(2, 1));
-		
-		assertFalse(Operation.UNIQUE.isValidSolution(2, 2,3,2));
-		assertFalse(Operation.UNIQUE.isValidSolution(-1, 5,5,4));
-		assertFalse(Operation.UNIQUE.isValidSolution(0, 1,6,1,1,1,8));
-	}
-	
 }
