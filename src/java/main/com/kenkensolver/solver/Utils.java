@@ -1,6 +1,7 @@
 package com.kenkensolver.solver;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -147,6 +148,36 @@ public class Utils {
 		}
 
 		return removeDuplicateLists(allUniqueOrderings); 
+	}
+
+	public static Set<Integer> getIntersection(Set<List<Integer>> setOfLists) {
+		Set<Integer> intersection = new HashSet<Integer>();
+		
+		if (setOfLists == null || setOfLists.isEmpty()) {
+			return intersection;
+		}
+		
+		intersection.addAll(setOfLists.iterator().next());
+		
+		for (List<Integer> list : setOfLists) {
+			intersection = getIntersection(intersection, list);
+		}
+		
+		return intersection;
+	}
+	
+	protected static Set<Integer> getIntersection(Collection<Integer> list1, Collection<Integer> list2) {
+		Set<Integer> intersection = new HashSet<Integer>();
+		
+		if (list1 != null && list2 != null && !list1.isEmpty() && !list2.isEmpty()) {
+			for (Integer value : list1) {
+				if (list2.contains(value)) {
+					intersection.add(value);
+				}
+			}
+		}
+		
+		return intersection;
 	}
 	
 	

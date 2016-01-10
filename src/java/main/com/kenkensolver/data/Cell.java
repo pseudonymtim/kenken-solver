@@ -121,8 +121,8 @@ public class Cell {
 			cellLine = " " + bespokeGroup.getResult() + 
 					bespokeGroup.getOperation().getOperationSymbol() + cellLine;
 		}
-		else if (lineInCell == (cellHeight/2)+1 && isSolved()) {
-			int value = 0;
+		else if (isSolved() && lineInCell == (cellHeight/2)+1 && isSolved()) {
+			int value = possibleValues.iterator().next();
 			String valueStr = String.valueOf(value);
 			String whitespacePadding = cellLine.substring(
 					0, Math.max(0, (cellWidth-valueStr.length())/2));

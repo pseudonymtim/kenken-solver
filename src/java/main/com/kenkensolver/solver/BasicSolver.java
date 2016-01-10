@@ -29,15 +29,15 @@ public class BasicSolver implements Solver {
 		
 		System.out.println(p.toStringDetailed());
 		
-		while (!p.isSolved()) {
-			
-			for (BespokeGroup bg : p.getBespokeGroups()) {
-				
-				bg.refineSolution();
-				
-			}
-			
-		}
+//		while (!p.isSolved()) {
+//			
+//			for (BespokeGroup bg : p.getBespokeGroups()) {
+//				
+//				bg.refineSolution();
+//				
+//			}
+//			
+//		}
 		
 	}
 
