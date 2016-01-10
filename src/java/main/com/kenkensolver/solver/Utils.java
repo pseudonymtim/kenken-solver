@@ -36,11 +36,22 @@ public class Utils {
 		return combos;
 	}
 
-	public static Set<List<Integer>> removeDuplicateListsIgnoreOrdering(Set<List<Integer>> setOfLists) {
+	public static Set<List<Integer>> removeDuplicateListsIgnoreOrdering(
+			Set<List<Integer>> setOfLists) {
+		return removeDuplicateLists(setOfLists, true);
+	}
+
+	public static Set<List<Integer>> removeDuplicateLists(
+			Set<List<Integer>> setOfLists) {
+		return removeDuplicateLists(setOfLists, false);
+	}
+
+	protected static Set<List<Integer>> removeDuplicateLists(
+			Set<List<Integer>> setOfLists, boolean ignoreOrdering) {
 		Set<List<Integer>> noDupsSet = new HashSet<List<Integer>>();
 		
 		for (List<Integer> list : setOfLists) {
-			if (!alreadyIncluded(noDupsSet, list)) {
+			if (!alreadyIncluded(noDupsSet, list, ignoreOrdering)) {
 				noDupsSet.add(list);
 			}
 		}
@@ -48,7 +59,8 @@ public class Utils {
 		return noDupsSet;
 	}
 
-	private static boolean alreadyIncluded(Set<List<Integer>> noDupsSet, List<Integer> list) {
+	protected static boolean alreadyIncluded(Set<List<Integer>> noDupsSet, List<Integer> list, 
+			boolean ignoreOrdering) {
 		// There's nothing in the no dups set
 		if (noDupsSet == null || noDupsSet.size() == 0) {
 			return false;
@@ -64,8 +76,10 @@ public class Utils {
 			}
 			else if (listInSet != null && listInSet.size() == list.size()) {
 				
-				Collections.sort(list);
-				Collections.sort(listInSet);
+				if (ignoreOrdering) {
+					Collections.sort(list);
+					Collections.sort(listInSet);
+				}
 				
 				boolean areListsEqual = true;
 				
@@ -97,6 +111,42 @@ public class Utils {
 		}
 		
 		return false;
+	}
+
+	public static Set<List<Integer>> generateAllUniqueOrderings(List<Integer> list) {
+		Set<List<Integer>> allUniqueOrderings = new HashSet<List<Integer>>();
+		
+		if (list.size() == 1) {
+			allUniqueOrderings.add(list);
+		}
+		else {
+			for (int i=0; i<list.size(); i++) {
+				
+				Integer value = list.get(i);
+				
+				List<Integer> reducedList = new ArrayList<Integer>();
+				
+				// Add all elements before the current element to the reduced list
+				if (i > 0) {
+					reducedList.addAll(list.subList(0, i));
+				}
+				
+				// Add all elements after the current element to the reduced list
+				if (i < list.size()-1) {
+					reducedList.addAll(list.subList(i+1, list.size()));
+				}
+				
+				Set<List<Integer>> setOfSubOrderings = generateAllUniqueOrderings(reducedList);
+				
+				for (List<Integer> subOrdering : setOfSubOrderings) {
+					subOrdering.add(value);
+					allUniqueOrderings.add(subOrdering);
+				}
+				
+			}
+		}
+
+		return removeDuplicateLists(allUniqueOrderings); 
 	}
 	
 	

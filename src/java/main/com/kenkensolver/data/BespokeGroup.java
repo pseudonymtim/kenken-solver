@@ -56,6 +56,12 @@ public class BespokeGroup extends Group {
 				+ "Cells={"+ cellsJoiner.toString() + "} "
 				+ "PosSolns={"+solutionsJoiner+"}}";
 	}
+	
+	@Override
+	protected boolean isSolutionPossible(List<Integer> possibleGroupSolution) {
+		return operation.isValidSolution(result, possibleGroupSolution)
+				&& super.isSolutionPossible(possibleGroupSolution);
+	}
 
 	public void generatePossibleSolutions() {
 		
@@ -74,7 +80,7 @@ public class BespokeGroup extends Group {
 		Set<Integer> possibleCellValues = new HashSet<Integer>();
 		
 		for (List<Integer> possibleGroupSolution : possibleGroupSolutions) {
-			if (operation.isValidSolution(result, possibleGroupSolution)) {
+			if (isSolutionPossible(possibleGroupSolution)) {
 				validGroupSolutions.add(possibleGroupSolution);
 				possibleCellValues.addAll(possibleGroupSolution);
 			}

@@ -1,7 +1,6 @@
 package com.kenkensolver.solver;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.kenkensolver.data.BespokeGroup;
@@ -51,10 +50,8 @@ public class BasicSolver implements Solver {
 		// Go through each group and figure out solutions
 		for (BespokeGroup bg : p.getBespokeGroups()) {
 			
-			// Generate all possible soluions for that group
+			// Generate all possible solutions for that group
 			bg.generatePossibleSolutions();
-			Set<List<Integer>> possibleSolutions = bg.getPossibleSolutions();
-			
 			
 		}
 	}
