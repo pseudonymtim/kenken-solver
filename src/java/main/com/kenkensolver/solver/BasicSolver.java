@@ -29,7 +29,7 @@ public class BasicSolver implements Solver {
 		
 		System.out.println(p.toStringDetailed());
 		
-		while (!allCellsSolved(p)) {
+		while (!p.isSolved()) {
 			
 			for (BespokeGroup bg : p.getBespokeGroups()) {
 				
@@ -38,11 +38,6 @@ public class BasicSolver implements Solver {
 			}
 			
 		}
-		
-		
-		
-		
-		
 		
 	}
 
@@ -54,15 +49,6 @@ public class BasicSolver implements Solver {
 			bg.generatePossibleSolutions();
 			
 		}
-	}
-
-	private boolean allCellsSolved(Puzzle p) {
-		boolean puzzleSolved = true;
-		for (Cell c : p.getAllCells()) {
-			puzzleSolved &= c.isSolved();
-		}
-		return puzzleSolved;
-		
 	}
 
 	private void processAllGroupsWithOneCell(Puzzle puzzle) {

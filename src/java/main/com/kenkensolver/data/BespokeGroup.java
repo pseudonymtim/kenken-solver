@@ -58,9 +58,14 @@ public class BespokeGroup extends Group {
 	}
 	
 	@Override
-	protected boolean isSolutionPossible(List<Integer> possibleGroupSolution) {
-		return operation.isValidSolution(result, possibleGroupSolution)
-				&& super.isSolutionPossible(possibleGroupSolution);
+	protected boolean isSolutionValid(List<Integer> potentialGroupSolution) {
+		boolean isValidArithmetically = operation.isValidSolution(result, potentialGroupSolution); 
+		if (isValidArithmetically) {
+			return super.isSolutionValid(potentialGroupSolution);
+		}
+		else {
+			return false;
+		}
 	}
 
 	public void generatePossibleSolutions() {
@@ -80,7 +85,8 @@ public class BespokeGroup extends Group {
 		Set<Integer> possibleCellValues = new HashSet<Integer>();
 		
 		for (List<Integer> possibleGroupSolution : possibleGroupSolutions) {
-			if (isSolutionPossible(possibleGroupSolution)) {
+			boolean validSolution = isSolutionValid(possibleGroupSolution);
+			if (validSolution) {
 				validGroupSolutions.add(possibleGroupSolution);
 				possibleCellValues.addAll(possibleGroupSolution);
 			}
@@ -126,7 +132,7 @@ public class BespokeGroup extends Group {
 	public void refineSolution() {
 		
 		// Check if group is already solved
-		if (isGroupSolved()) {
+		if (isSolved()) {
 			return;
 		}
 		

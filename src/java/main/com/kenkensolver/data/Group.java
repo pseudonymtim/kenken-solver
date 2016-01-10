@@ -44,7 +44,7 @@ public class Group {
 		cells.add(c);
 	}
 
-	public boolean isGroupSolved() {
+	public boolean isSolved() {
 		boolean isSolved = true;
 		for (Cell cell : getCells()) {
 			isSolved &= cell.isSolved();
@@ -100,26 +100,29 @@ public class Group {
 		return mostBottomRight;
 	}
 	
-	protected boolean isSolutionPossible(List<Integer> possibleGroupSolution) {
-		if (possibleGroupSolution == null 
-				|| cells.size() != possibleGroupSolution.size()) {
+	protected boolean isSolutionValid(List<Integer> potentialGroupSolution) {
+		if (potentialGroupSolution == null 
+				|| cells.size() != potentialGroupSolution.size()) {
 			return false;
 		}
 		
 		List<Cell> cellList = new ArrayList<Cell>();
 		cellList.addAll(cells);
 		
-		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(possibleGroupSolution);
+		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(potentialGroupSolution);
 		
 		// Loop through the orderings and test each one
 		for (List<Integer> ordering : allOrderings) {
 			
 			// Check if the shape of the group supports the ordering
 			if (isSolutionOrderValid(cellList, ordering)) {
-				if (containsDuplicates(possibleGroupSolution)) {
+				if (containsDuplicates(potentialGroupSolution)) {
 					if (isSolutionShapeValid(cellList, ordering)) {
 						return true;
 					}
+				}
+				else {
+					return true;
 				}
 			}
 			
@@ -196,7 +199,7 @@ public class Group {
 				// Get the proposed values for the current row
 				for (int i=0; i<cellList.size(); i++) {
 					Cell currCell = cellList.get(i);
-					if (currCol == currCell.getPosition().getRowIndex()) {
+					if (currCol == currCell.getPosition().getColIndex()) {
 						// Cell is in the current row, add it's proposed value
 						list.add(ordering.get(i));
 						set.add(ordering.get(i));

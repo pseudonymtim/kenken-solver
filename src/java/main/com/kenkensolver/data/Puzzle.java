@@ -76,6 +76,14 @@ public class Puzzle {
 		int columnIndex = cell.getPosition().getColIndex();
 		return columnGroupMap.get(columnIndex).getCells();
 	}
+
+	public boolean isSolved() {
+		boolean isSolved = true;
+		for (Cell c : getAllCells()) {
+			isSolved &= c.isSolved();
+		}
+		return isSolved;
+	}
 	
 	public String toStringDetailed() {
 		StringBuilder sb = new StringBuilder();
