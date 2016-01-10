@@ -29,15 +29,44 @@ public class BasicSolver implements Solver {
 		
 		System.out.println(p.toStringDetailed());
 		
-//		while (!p.isSolved()) {
-//			
-//			for (BespokeGroup bg : p.getBespokeGroups()) {
-//				
-//				bg.refineSolution();
-//				
-//			}
-//			
-//		}
+		int puzzlePass=1;
+		
+		while (!p.isSolved()) {
+			
+			for (BespokeGroup bg : p.getBespokeGroups()) {
+				bg.refineSolution();
+			}
+			
+			for (Cell c : p.getAllCells()) {
+				if (c.isSolved()) {
+					Set<Cell> cellsInSameRowAndColumn = new HashSet<Cell>();
+					cellsInSameRowAndColumn.addAll(c.getRowGroup().getCells());
+					cellsInSameRowAndColumn.addAll(c.getColumnGroup().getCells());
+					cellsInSameRowAndColumn.remove(c);
+					
+					Integer solution = c.getPossibleValues().iterator().next();
+					
+					for (Cell cell : cellsInSameRowAndColumn) {
+						cell.removeValueFromPossible(solution.intValue());
+					}
+					
+				}
+			}
+			
+			int cellsSolved = 0;
+			for (Cell c : p.getAllCells()) {
+				if (c.isSolved()) {
+					cellsSolved++;
+				}
+			}
+			
+			System.out.println(p.toStringAscii());
+			System.out.println(p.toStringDetailed());
+			
+			System.out.println("puzzlePass= " + puzzlePass++
+					+ " cellsSolved=" + cellsSolved++);
+			
+		}
 		
 	}
 

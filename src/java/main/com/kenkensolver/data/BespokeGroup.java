@@ -11,7 +11,13 @@ import com.kenkensolver.solver.Utils;
 public class BespokeGroup extends Group {
 	private final int result;
 	private final Operation operation;
+	
+	// TODO: I think possible solutions var needs to be moved to the super class????
 	private Set<List<Integer>> possibleSolutions;
+	
+	// TODO The issue is that the row and cell groups are all fucked up
+	// they are missing most of their entries, which explains why some of the
+	// cells are not being updated.
 	
 	public BespokeGroup(int res, Operation op) {
 		super();
@@ -104,6 +110,83 @@ public class BespokeGroup extends Group {
 		//
 		
 		// Only want to know about values that are guaranteed to be in the group
+		updatePossibleCellValues(validGroupSolutions);
+		
+		
+		
+		//
+		// TODO: As below
+		//
+		
+		
+
+		//  >> Once you have truly valid solutions, then start looking for things like
+		//     "then 3 can only be in one column/row in this group, so it can't be a
+		//     possibility in any other cells outside this group in the same column/row.
+		//
+		//  >> As cells get solved, remove them from the group they are in and change the
+		//     result the group has. That way a new set of possible solutions can be generated
+		//     for the remaining unsolved cells and the idea of "these 2 cells must be these 2
+		//     values". Must also preserve the original format for printing later.
+		//   > Generally, remove cells from groups when the cell has been solved and adjust the
+		//     group result, and when a whole group is solved remove that group from the list of
+		//     bespoke groups because it no longer requires any compute power.
+		//
+		//  >> Don't forget about somehow detecting that a cell *must* be a certain value
+		//     and then updating all other cells in that row/column.
+		
+		possibleSolutions = validGroupSolutions;
+	}
+	
+	@Override
+	public boolean isSolved() {
+		return possibleSolutions.size() == 1 && super.isSolved();
+	}
+
+	public void refineSolution() {
+		
+		// Check if group is already solved
+		if (isSolved()) {
+			return;
+		}
+		
+		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
+		Set<Integer> possibleCellValues = new HashSet<Integer>();
+		
+		for (List<Integer> possibleSolution : possibleSolutions) {
+			if (isSolutionValid(possibleSolution)) {
+				validGroupSolutions.add(possibleSolution);
+				possibleCellValues.addAll(possibleSolution);
+			}
+		}
+		
+		// Update possible cell values with results of possibleSolutions
+		for (Cell cell : getCells()) {
+			cell.removeAllValuesNotIn(possibleCellValues);
+		}
+		
+		updatePossibleCellValues(validGroupSolutions);
+		
+		possibleSolutions = validGroupSolutions;
+		
+		// per possible solution
+		
+		// work out if that solution is viable with:
+		// current cell possible values
+		// the shape of the group
+		
+		
+		// for each possible cell value in the group (and the group only has one solution)\\
+		//
+		// see if that cell value only appears in one row or column
+		// then update row/column cells accordingly
+		
+		
+		
+		
+	}
+
+	private void updatePossibleCellValues(Set<List<Integer>> validGroupSolutions) {
 		Set<Integer> guaranteedValuesForGroup = Utils.getIntersection(validGroupSolutions);
 		
 		for (Integer value : guaranteedValuesForGroup) {
@@ -166,55 +249,6 @@ public class BespokeGroup extends Group {
 			
 			
 		}
-		
-		
-		
-		//
-		// TODO: As below
-		//
-		
-		
-
-		//  >> Once you have truly valid solutions, then start looking for things like
-		//     "then 3 can only be in one column/row in this group, so it can't be a
-		//     possibility in any other cells outside this group in the same column/row.
-		//
-		//  >> As cells get solved, remove them from the group they are in and change the
-		//     result the group has. That way a new set of possible solutions can be generated
-		//     for the remaining unsolved cells and the idea of "these 2 cells must be these 2
-		//     values". Must also preserve the original format for printing later.
-		//   > Generally, remove cells from groups when the cell has been solved and adjust the
-		//     group result, and when a whole group is solved remove that group from the list of
-		//     bespoke groups because it no longer requires any compute power.
-		//
-		//  >> Don't forget about somehow detecting that a cell *must* be a certain value
-		//     and then updating all other cells in that row/column.
-		
-		possibleSolutions = validGroupSolutions;
-	}
-
-	public void refineSolution() {
-		
-		// Check if group is already solved
-		if (isSolved()) {
-			return;
-		}
-		
-		// per possible solution
-		
-		// work out if that solution is viable with:
-		// current cell possible values
-		// the shape of the group
-		
-		
-		// for each possible cell value in the group (and the group only has one solution)\\
-		//
-		// see if that cell value only appears in one row or column
-		// then update row/column cells accordingly
-		
-		
-		
-		
 	}
 	
 }

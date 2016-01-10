@@ -1,6 +1,7 @@
 package com.kenkensolver.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -121,9 +122,14 @@ public class Cell {
 			cellLine = " " + bespokeGroup.getResult() + 
 					bespokeGroup.getOperation().getOperationSymbol() + cellLine;
 		}
-		else if (isSolved() && lineInCell == (cellHeight/2)+1 && isSolved()) {
-			int value = possibleValues.iterator().next();
-			String valueStr = String.valueOf(value);
+		else if (lineInCell == (cellHeight/2)+1) {
+			String valueStr = "";
+			List<Integer> possibleValuesList = new ArrayList<Integer>();
+			possibleValuesList.addAll(possibleValues);
+			Collections.sort(possibleValuesList);
+			for (Integer value : possibleValuesList) {
+				valueStr += value;
+			}
 			String whitespacePadding = cellLine.substring(
 					0, Math.max(0, (cellWidth-valueStr.length())/2));
 			cellLine = whitespacePadding + valueStr + cellLine;
