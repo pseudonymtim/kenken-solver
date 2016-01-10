@@ -39,6 +39,14 @@ public class Group {
 	public void addCell(Cell c) {
 		cells.add(c);
 	}
+
+	public boolean isGroupSolved() {
+		boolean isSolved = true;
+		for (Cell cell : getCells()) {
+			isSolved &= cell.isSolved();
+		}
+		return isSolved;
+	}
 	
 	@Override
 	public String toString() {

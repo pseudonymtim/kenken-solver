@@ -132,4 +132,32 @@ public class Cell {
 		return cellLine.substring(0, cellWidth);
 	}
 
+	public void removeAllValuesNotIn(Set<Integer> possibleValuesToKeep) {
+		Set<Integer> posValsToRemove = new HashSet<Integer>();
+		
+		for (Integer posVal : possibleValues) {
+			if (!possibleValuesToKeep.contains(posVal)) {
+				posValsToRemove.add(posVal);
+			}
+		}
+		
+		possibleValues.removeAll(posValsToRemove);
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

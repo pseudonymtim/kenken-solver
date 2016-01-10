@@ -71,12 +71,21 @@ public class BespokeGroup extends Group {
 		
 		// validate each solution against the result and operation
 		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
+		Set<Integer> possibleCellValues = new HashSet<Integer>();
 		
 		for (List<Integer> possibleGroupSolution : possibleGroupSolutions) {
 			if (operation.isValidSolution(result, possibleGroupSolution)) {
 				validGroupSolutions.add(possibleGroupSolution);
+				possibleCellValues.addAll(possibleGroupSolution);
 			}
 		}
+		
+		// Update possible cell values with results of possibleSolutions
+		for (Cell cell : getCells()) {
+			cell.removeAllValuesNotIn(possibleCellValues);
+		}
+		
+		
 		
 		//
 		// TODO: As below
@@ -106,6 +115,30 @@ public class BespokeGroup extends Group {
 		//     bespoke groups because it no longer requires any compute power.
 		
 		possibleSolutions = validGroupSolutions;
+	}
+
+	public void refineSolution() {
+		
+		// Check if group is already solved
+		if (isGroupSolved()) {
+			return;
+		}
+		
+		// per possible solution
+		
+		// work out if that solution is viable with:
+		// current cell possible values
+		// the shape of the group
+		
+		
+		// for each possible cell value in the group (and the group only has one solution)\\
+		//
+		// see if that cell value only appears in one row or column
+		// then update row/column cells accordingly
+		
+		
+		
+		
 	}
 	
 }

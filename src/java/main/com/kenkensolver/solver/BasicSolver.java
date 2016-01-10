@@ -32,6 +32,11 @@ public class BasicSolver implements Solver {
 		
 		while (!allCellsSolved(p)) {
 			
+			for (BespokeGroup bg : p.getBespokeGroups()) {
+				
+				bg.refineSolution();
+				
+			}
 			
 		}
 		
