@@ -71,7 +71,6 @@ public class Application {
 				.build();
 		
 		System.out.println(puzzle.toStringAscii());
-		
 		System.out.println(puzzle.toStringDetailed());
 		
 		BasicSolver solver = new BasicSolver();

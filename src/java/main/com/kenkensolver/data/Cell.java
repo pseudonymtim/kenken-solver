@@ -18,13 +18,32 @@ public class Cell {
 	private Group rowGroup;
 	private Group columnGroup;
 	
-	public Cell(Position pos, BespokeGroup bg, Group rowGroup2, Group columnGroup2) {
+	public Cell(Position pos, BespokeGroup bg, Group rg, Group cg) {
 		id = ID_COUNTER++;
 		position = pos;
 		possibleValues = new HashSet<Integer>();
 		bespokeGroup = bg;
-		rowGroup = rowGroup2;
-		columnGroup = columnGroup2;
+		rowGroup = rg;
+		columnGroup = cg;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		else if (!(o instanceof Cell)) {
+			return false;
+		}
+		else {
+			Cell c = (Cell)o;
+			return id == c.getId();
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
 	}
 	
 	public int getId() {
@@ -77,8 +96,8 @@ public class Cell {
 		if (possibleValues.contains(impossibleVal)) {
 			// Check if the last remaining possible value is being removed
 			if (possibleValues.size() <= 1) {
-				System.out.println("ERROR: Trying to remove the last possible value " + impossibleVal
-						+ " for cell at position " + position.toString());
+				System.out.println("ERROR: Trying to remove the last possible value of [" + impossibleVal
+						+ "] for cell at position " + position.toString());
 				throw new IllegalStateException();
 			}
 			
@@ -148,6 +167,26 @@ public class Cell {
 		}
 		
 		possibleValues.removeAll(posValsToRemove);
+	}
+	
+	public void updateCellsInSameRowAndColumn() {
+		if (isSolved()) {
+			int cellSolution = possibleValues.iterator().next().intValue();
+			
+			// Remove possible value from all cells in the same row
+			for (Cell rowGroupCell : rowGroup.getCells()) {
+				if (!this.equals(rowGroupCell)) {
+					rowGroupCell.removeValueFromPossible(cellSolution);
+				}
+			}
+			
+			// Remove possible value from all cells in the same column
+			for (Cell columnGroupCell : columnGroup.getCells()) {
+				if (!this.equals(columnGroupCell)) {
+					columnGroupCell.removeValueFromPossible(cellSolution);
+				}
+			}
+		}
 	}
 
 }

@@ -157,7 +157,12 @@ public class Utils {
 			return intersection;
 		}
 		
-		intersection.addAll(setOfLists.iterator().next());
+		// Get the first non-null list and add its contents to the intersection
+		for (List<Integer> list : setOfLists) {
+			if (list != null) {
+				intersection.addAll(list);
+			}
+		}
 		
 		for (List<Integer> list : setOfLists) {
 			intersection = getIntersection(intersection, list);

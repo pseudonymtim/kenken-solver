@@ -111,27 +111,31 @@ public class Group {
 		
 		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(potentialGroupSolution);
 		
+		boolean isValidSolution = false;
+		
 		// Loop through the orderings and test each one
 		for (List<Integer> ordering : allOrderings) {
 			
 			// Check if the shape of the group supports the ordering
 			if (isSolutionOrderValid(cellList, ordering)) {
 				if (containsDuplicates(potentialGroupSolution)) {
-					if (isSolutionShapeValid(cellList, ordering)) {
-						return true;
-					}
+					isValidSolution |= isSolutionShapeValid(cellList, ordering);
 				}
 				else {
-					return true;
+					isValidSolution = true;
 				}
 			}
 			
 		}
 		
-		return false;
+		return isValidSolution;
 	}
 
 	private boolean isSolutionOrderValid(List<Cell> cellList, List<Integer> ordering) {
+		if (cellList.size() != ordering.size()) {
+			return false;
+		}
+		
 		// Check if this ordering is possible given possible cell values
 		for (int i=0; i<ordering.size(); i++) {
 			Integer currValue = ordering.get(i);

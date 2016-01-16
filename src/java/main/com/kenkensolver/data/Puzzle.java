@@ -99,7 +99,10 @@ public class Puzzle {
 		positions.addAll(positionCellMap.keySet());
 		Collections.sort(positions);
 		for (Position pos : positions) {
-			sb.append("  " + positionCellMap.get(pos) + "\n");
+			Cell cell = positionCellMap.get(pos);
+			sb.append("  " + cell + "\n");
+			sb.append("    " + cell.getRowGroup() + "\n");
+			sb.append("    " + cell.getColumnGroup() + "\n");
 		}
 		sb.append("\n");
 		

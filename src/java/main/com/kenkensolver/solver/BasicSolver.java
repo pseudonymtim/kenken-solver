@@ -17,16 +17,13 @@ public class BasicSolver implements Solver {
 		// Hydrate cells with possible values
 		hydrateAllCellsWithPossibleValues(p);
 		
-		System.out.println(p.toStringDetailed());
-		
 		// Get all groups with NONE operator and assign the cell with that value
 		processAllGroupsWithOneCell(p);
-		
-		System.out.println(p.toStringDetailed());
 		
 		// process the groups
 		processGroupsGenSolutions(p);
 		
+		System.out.println(p.toStringAscii());
 		System.out.println(p.toStringDetailed());
 		
 		int puzzlePass=1;
@@ -34,23 +31,15 @@ public class BasicSolver implements Solver {
 		while (!p.isSolved()) {
 			
 			for (BespokeGroup bg : p.getBespokeGroups()) {
-				bg.refineSolution();
+				// put conditional around a solved group
+				bg.refineSolution(p);
+//				System.out.println(p.toStringDetailed());
+//				System.out.println(p.toStringAscii());
+//				System.out.print("");
 			}
 			
 			for (Cell c : p.getAllCells()) {
-				if (c.isSolved()) {
-					Set<Cell> cellsInSameRowAndColumn = new HashSet<Cell>();
-					cellsInSameRowAndColumn.addAll(c.getRowGroup().getCells());
-					cellsInSameRowAndColumn.addAll(c.getColumnGroup().getCells());
-					cellsInSameRowAndColumn.remove(c);
-					
-					Integer solution = c.getPossibleValues().iterator().next();
-					
-					for (Cell cell : cellsInSameRowAndColumn) {
-						cell.removeValueFromPossible(solution.intValue());
-					}
-					
-				}
+				c.updateCellsInSameRowAndColumn();
 			}
 			
 			int cellsSolved = 0;
@@ -60,11 +49,13 @@ public class BasicSolver implements Solver {
 				}
 			}
 			
-			System.out.println(p.toStringAscii());
-			System.out.println(p.toStringDetailed());
+			System.out.print(p.toStringDetailed());
+			System.out.print(p.toStringAscii());
 			
 			System.out.println("puzzlePass= " + puzzlePass++
 					+ " cellsSolved=" + cellsSolved++);
+			
+			System.out.print("");
 			
 		}
 		
