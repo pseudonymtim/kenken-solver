@@ -189,6 +189,20 @@ public class Cell {
 		}
 	}
 
+	public void removeAllPossibleValuesExcept(Integer valueToKeep) {
+
+		Set<Integer> posValsToRemove = new HashSet<Integer>();
+		
+		for (Integer posVal : possibleValues) {
+			if (!posVal.equals(valueToKeep)) {
+				posValsToRemove.add(posVal);
+			}
+		}
+		
+		possibleValues.removeAll(posValsToRemove);
+		
+	}
+
 }
 
 

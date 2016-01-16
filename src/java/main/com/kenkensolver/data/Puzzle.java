@@ -101,8 +101,8 @@ public class Puzzle {
 		for (Position pos : positions) {
 			Cell cell = positionCellMap.get(pos);
 			sb.append("  " + cell + "\n");
-			sb.append("    " + cell.getRowGroup() + "\n");
-			sb.append("    " + cell.getColumnGroup() + "\n");
+//			sb.append("    " + cell.getRowGroup() + "\n"); // TODO remove these 2 lines
+//			sb.append("    " + cell.getColumnGroup() + "\n");
 		}
 		sb.append("\n");
 		
@@ -344,6 +344,14 @@ public class Puzzle {
 			
 			return puzzle;
 		}
+	}
+
+	public Set<Group> getAllGroups() {
+		Set<Group> groups = new HashSet<Group>();
+		groups.addAll(bespokeGroups);
+		groups.addAll(rowGroupMap.values());
+		groups.addAll(columnGroupMap.values());
+		return groups;
 	}
 	
 }

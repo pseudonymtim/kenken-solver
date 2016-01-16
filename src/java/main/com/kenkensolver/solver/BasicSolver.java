@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.kenkensolver.data.BespokeGroup;
 import com.kenkensolver.data.Cell;
+import com.kenkensolver.data.Group;
 import com.kenkensolver.data.Operation;
 import com.kenkensolver.data.Position;
 import com.kenkensolver.data.Puzzle;
@@ -23,19 +24,14 @@ public class BasicSolver implements Solver {
 		// process the groups
 		processGroupsGenSolutions(p);
 		
-		System.out.println(p.toStringAscii());
-		System.out.println(p.toStringDetailed());
-		
 		int puzzlePass=1;
 		
 		while (!p.isSolved()) {
 			
-			for (BespokeGroup bg : p.getBespokeGroups()) {
-				// put conditional around a solved group
-				bg.refineSolution(p);
-//				System.out.println(p.toStringDetailed());
-//				System.out.println(p.toStringAscii());
-//				System.out.print("");
+			for (Group group : p.getAllGroups()) {
+				if (!group.isSolved()) {
+					group.refineSolutionSpace(p);
+				}
 			}
 			
 			for (Cell c : p.getAllCells()) {
@@ -43,19 +39,25 @@ public class BasicSolver implements Solver {
 			}
 			
 			int cellsSolved = 0;
+			int possibleCellValues = 0;
 			for (Cell c : p.getAllCells()) {
 				if (c.isSolved()) {
 					cellsSolved++;
 				}
+				possibleCellValues += c.getPossibleValues().size();
 			}
 			
-			System.out.print(p.toStringDetailed());
-			System.out.print(p.toStringAscii());
+			int possibleGroupSolutions = 0;
+			for (BespokeGroup bg : p.getBespokeGroups()) {
+				possibleGroupSolutions += bg.getPossibleSolutions().size();
+			}
 			
-			System.out.println("puzzlePass= " + puzzlePass++
-					+ " cellsSolved=" + cellsSolved++);
-			
-			System.out.print("");
+			System.out.println(p.toStringDetailed());
+			System.out.println(p.toStringAscii());
+			System.out.println("puzzlePass=" + puzzlePass++
+					+ " cellsSolved=" + cellsSolved
+					+ " possibleCellValues=" + possibleCellValues
+					+ " possibleGroupSolutions=" + possibleGroupSolutions);
 			
 		}
 		

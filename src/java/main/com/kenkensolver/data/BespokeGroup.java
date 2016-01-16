@@ -115,7 +115,8 @@ public class BespokeGroup extends Group {
 		return possibleSolutions.size() == 1 && super.isSolved();
 	}
 
-	public void refineSolution(Puzzle p) {
+	@Override
+	public void refineSolutionSpace(Puzzle p) {
 		
 		// Check if group is already solved
 		if (isSolved()) {
@@ -141,12 +142,43 @@ public class BespokeGroup extends Group {
 			cell.removeAllValuesNotIn(possibleCellValues);
 		}
 		
-		updatePossibleCellValues(validGroupSolutions, p);
+		// get all unique possible orderings for all orderings
+		List<Cell> cellList = getCellsAsList();
+		
+		Set<List<Integer>> possibleOrderings = getAllPossibleOrderings(cellList, possibleSolutions);
+		
+		for (int pos=0; pos<cellList.size(); pos++) {
+			
+			// TODO have some sort of null check here
+			Integer valueAtPosInFirstOrdering = possibleOrderings.iterator().next().get(pos);
+			boolean sameValAtPosForAllOrderings = true;
+			
+			for (List<Integer> possibleOrdering : possibleOrderings) {
+				
+				Integer valueAtPosInNthOrdering = possibleOrdering.get(pos);
+				
+				if (valueAtPosInFirstOrdering != valueAtPosInNthOrdering) {
+					sameValAtPosForAllOrderings = false;
+					break;
+				}
+			}
+			
+			// Same value in position x for all possible orderings, then assign that
+			// cell that value as the cells solution
+			if (sameValAtPosForAllOrderings) {
+				cellList.get(pos).removeAllPossibleValuesExcept(valueAtPosInFirstOrdering);
+			}
+			
+		}
+			
+		updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(validGroupSolutions, p);
 	}
 
 	// TODO rename this method to something more suitable
 	// TODO remove the puzzle argument
-	private void updatePossibleCellValues(Set<List<Integer>> validGroupSolutions, Puzzle p) {
+	private void updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(
+			Set<List<Integer>> validGroupSolutions, Puzzle p) {
+		
 		Set<Integer> guaranteedValuesForGroup = Utils.getIntersection(validGroupSolutions);
 		
 		for (Integer value : guaranteedValuesForGroup) {

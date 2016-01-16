@@ -113,6 +113,16 @@ public class Utils {
 		
 		return false;
 	}
+	
+	public static Set<List<Integer>> generateAllUniqueOrderings(Set<List<Integer>> setOfLists) {
+		Set<List<Integer>> allUniqueOrderings = new HashSet<List<Integer>>();
+		
+		for (List<Integer> list : setOfLists) {
+			allUniqueOrderings.addAll(generateAllUniqueOrderings(list));
+		}
+		
+		return removeDuplicateLists(allUniqueOrderings);
+	}
 
 	public static Set<List<Integer>> generateAllUniqueOrderings(List<Integer> list) {
 		Set<List<Integer>> allUniqueOrderings = new HashSet<List<Integer>>();
@@ -147,7 +157,7 @@ public class Utils {
 			}
 		}
 
-		return removeDuplicateLists(allUniqueOrderings); 
+		return removeDuplicateLists(allUniqueOrderings);
 	}
 
 	public static Set<Integer> getIntersection(Set<List<Integer>> setOfLists) {

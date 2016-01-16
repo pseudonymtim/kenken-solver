@@ -100,35 +100,56 @@ public class Group {
 		return mostBottomRight;
 	}
 	
-	protected boolean isSolutionValid(List<Integer> potentialGroupSolution) {
-		if (potentialGroupSolution == null 
-				|| cells.size() != potentialGroupSolution.size()) {
-			return false;
-		}
-		
+	protected List<Cell> getCellsAsList() {
 		List<Cell> cellList = new ArrayList<Cell>();
 		cellList.addAll(cells);
+		return cellList;
+	}
+	
+	protected boolean isSolutionValid(List<Integer> potentialSolution) {
+		Set<List<Integer>> setOfPotentialSolution = new HashSet<List<Integer>>();
+		setOfPotentialSolution.add(potentialSolution);
 		
-		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(potentialGroupSolution);
+		Set<List<Integer>> possibleOrderings = getAllPossibleOrderings(
+				getCellsAsList(), setOfPotentialSolution);
+		return !possibleOrderings.isEmpty();
+	}
+	
+	protected Set<List<Integer>> getAllPossibleOrderings(
+			List<Cell> cellList, Set<List<Integer>> possibleSolutions) {
 		
-		boolean isValidSolution = false;
+		// Returns empty set if the input conditions are wrong
+		if (cellList == null || possibleSolutions == null
+				|| cellList.isEmpty() || possibleSolutions.isEmpty()) {
+			return new HashSet<List<Integer>>();
+		}
+
+		/*
+		 * TODO Assuming that all possible solutions have the same number of items
+		 * as the cell list does. 
+		 */
+		
+		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(possibleSolutions);
+		Set<List<Integer>> possibleOrderings = new HashSet<List<Integer>>();
 		
 		// Loop through the orderings and test each one
 		for (List<Integer> ordering : allOrderings) {
 			
 			// Check if the shape of the group supports the ordering
 			if (isSolutionOrderValid(cellList, ordering)) {
-				if (containsDuplicates(potentialGroupSolution)) {
-					isValidSolution |= isSolutionShapeValid(cellList, ordering);
+				if (containsDuplicates(ordering)) {
+					if (isSolutionShapeValid(cellList, ordering)) {
+						possibleOrderings.add(ordering);
+					}
 				}
 				else {
-					isValidSolution = true;
+					possibleOrderings.add(ordering);
 				}
 			}
 			
 		}
 		
-		return isValidSolution;
+		return possibleOrderings;
 	}
 
 	private boolean isSolutionOrderValid(List<Cell> cellList, List<Integer> ordering) {
@@ -226,6 +247,35 @@ public class Group {
 		Set<Integer> set = new HashSet<Integer>();
 		set.addAll(list);
 		return set.size() != list.size();
+	}
+
+	public void refineSolutionSpace(Puzzle p) {
+		
+		// Get set of unique values for the group
+		Set<Integer> allValues = new HashSet<Integer>();
+		for (Cell c : cells) {
+			allValues.addAll(c.getPossibleValues());
+		}
+		
+		// Check all values for this group
+		for (Integer value : allValues) {
+			Set<Cell> cellsThatCanHaveThatValue = new HashSet<Cell>();
+			
+			// Get cells that could be that value 
+			for (Cell c : cells) {
+				if (c.getPossibleValues().contains(value)) {
+					cellsThatCanHaveThatValue.add(c);
+				}
+			}
+			
+			// If only one cell can be that value, make that value the only possible one
+			if (cellsThatCanHaveThatValue.size() == 1) {
+				Cell c = cellsThatCanHaveThatValue.iterator().next();
+				c.removeAllPossibleValuesExcept(value);
+			}
+			
+		}
+		
 	}
 	
 }
