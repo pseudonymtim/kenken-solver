@@ -85,29 +85,6 @@ public class BespokeGroup extends Group {
 		
 		possibleSolutions = Utils.removeDuplicateListsIgnoreOrdering(possibleSolutions);
 		
-		
-		
-		//
-		// TODO: As below
-		//
-		
-		
-
-		//  >> Once you have truly valid solutions, then start looking for things like
-		//     "then 3 can only be in one column/row in this group, so it can't be a
-		//     possibility in any other cells outside this group in the same column/row.
-		//
-		//  >> As cells get solved, remove them from the group they are in and change the
-		//     result the group has. That way a new set of possible solutions can be generated
-		//     for the remaining unsolved cells and the idea of "these 2 cells must be these 2
-		//     values". Must also preserve the original format for printing later.
-		//   > Generally, remove cells from groups when the cell has been solved and adjust the
-		//     group result, and when a whole group is solved remove that group from the list of
-		//     bespoke groups because it no longer requires any compute power.
-		//
-		//  >> Don't forget about somehow detecting that a cell *must* be a certain value
-		//     and then updating all other cells in that row/column.
-		
 	}
 	
 	@Override
