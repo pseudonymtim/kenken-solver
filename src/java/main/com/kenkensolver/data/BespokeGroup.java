@@ -100,25 +100,14 @@ public class BespokeGroup extends Group {
 			return;
 		}
 		
-		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
-		Set<Integer> possibleCellValues = new HashSet<Integer>();
+		refinePossibleSolutions();
 		
-		// Get possible solutions and valid cell values
-		for (List<Integer> possibleSolution : possibleSolutions) {
-			if (isSolutionValid(possibleSolution)) {
-				validGroupSolutions.add(possibleSolution);
-				possibleCellValues.addAll(possibleSolution);
-			}
-		}
-		
-		// Update set of possible solutions for group
-		possibleSolutions = validGroupSolutions;
-		
-		// Update possible cell values with results of possibleSolutions
-		for (Cell cell : getCells()) {
-			cell.removeAllValuesNotIn(possibleCellValues);
-		}
-		
+		updatePossCellValsBasedOnPossGroupSolnOrderings();
+			
+		updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(possibleSolutions, p);
+	}
+
+	private void updatePossCellValsBasedOnPossGroupSolnOrderings() {
 		// get all unique possible orderings for all orderings
 		List<Cell> cellList = getCellsAsList();
 		
@@ -127,28 +116,30 @@ public class BespokeGroup extends Group {
 		for (int pos=0; pos<cellList.size(); pos++) {
 			
 			// TODO have some sort of null check here
-			Integer valueAtPosInFirstOrdering = possibleOrderings.iterator().next().get(pos);
-			boolean sameValAtPosForAllOrderings = true;
+			Set<Integer> possibleValuesForNthCell = new HashSet<Integer>();
 			
+			// Get set of all numbers that appear in that position across all possible orderings
 			for (List<Integer> possibleOrdering : possibleOrderings) {
-				
-				Integer valueAtPosInNthOrdering = possibleOrdering.get(pos);
-				
-				if (valueAtPosInFirstOrdering != valueAtPosInNthOrdering) {
-					sameValAtPosForAllOrderings = false;
-					break;
-				}
+				possibleValuesForNthCell.add(possibleOrdering.get(pos));
 			}
 			
-			// Same value in position x for all possible orderings, then assign that
-			// cell that value as the cells solution
-			if (sameValAtPosForAllOrderings) {
-				cellList.get(pos).removeAllPossibleValuesExcept(valueAtPosInFirstOrdering);
-			}
-			
+			// Assign those possibilities to the possible values for the cell
+			cellList.get(pos).removeAllValuesNotIn(possibleValuesForNthCell);
 		}
-			
-		updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(validGroupSolutions, p);
+	}
+
+	private void refinePossibleSolutions() {
+		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
+		
+		// Get possible solutions and valid cell values
+		for (List<Integer> possibleSolution : possibleSolutions) {
+			if (isSolutionValid(possibleSolution)) {
+				validGroupSolutions.add(possibleSolution);
+			}
+		}
+		
+		// Update set of possible solutions for group
+		possibleSolutions = validGroupSolutions;
 	}
 
 	// TODO rename this method to something more suitable
