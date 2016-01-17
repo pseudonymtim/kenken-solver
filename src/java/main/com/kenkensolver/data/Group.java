@@ -273,6 +273,11 @@ public class Group {
 				Cell c = cellsThatCanHaveThatValue.iterator().next();
 				c.removeAllPossibleValuesExcept(value);
 			}
+			/*
+			 * TODO this last if-then is a problem because it doesn't look across the whole
+			 * puzzle for groups of possibilities that may rule out possbilities in other 
+			 * cells.
+			 */
 			
 		}
 		

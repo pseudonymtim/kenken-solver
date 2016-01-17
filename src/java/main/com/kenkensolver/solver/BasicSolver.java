@@ -18,9 +18,6 @@ public class BasicSolver implements Solver {
 		// Hydrate cells with possible values
 		hydrateAllCellsWithPossibleValues(p);
 		
-		// Get all groups with NONE operator and assign the cell with that value
-		processAllGroupsWithOneCell(p);
-		
 		// process the groups
 		processGroupsGenSolutions(p);
 		

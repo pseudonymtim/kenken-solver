@@ -248,6 +248,7 @@ public class PuzzleDefs {
 	}
 	
 	public static Puzzle getPuzzle4() {
+		// puzzle 73922
 		return new Puzzle.Builder()
 				.addGroup(1, Operation.SUBTRACT, 
 						Position.getInstance(0, 0),
@@ -487,7 +488,57 @@ public class PuzzleDefs {
 	}
 	
 	public static Puzzle getPuzzle6() {
-		throw new NotImplementedException();
+		return new Puzzle.Builder()
+				.addGroup(13, Operation.ADD, 
+						Position.getInstance(0, 0),
+						Position.getInstance(0, 1),
+						Position.getInstance(1, 0),
+						Position.getInstance(1, 1))
+				.addGroup(180, Operation.MULTIPLY, 
+						Position.getInstance(0, 2),
+						Position.getInstance(0, 3),
+						Position.getInstance(0, 4),
+						Position.getInstance(1, 3))
+				.addGroup(9, Operation.ADD, 
+						Position.getInstance(0, 5),
+						Position.getInstance(1, 5),
+						Position.getInstance(2, 5))
+				.addGroup(2, Operation.NONE, 
+						Position.getInstance(1, 2))
+				.addGroup(20, Operation.MULTIPLY, 
+						Position.getInstance(1, 4),
+						Position.getInstance(2, 4))
+				.addGroup(15, Operation.ADD, 
+						Position.getInstance(2, 0),
+						Position.getInstance(3, 0),
+						Position.getInstance(4, 0))
+				.addGroup(6, Operation.MULTIPLY, 
+						Position.getInstance(2, 1),
+						Position.getInstance(2, 2))
+				.addGroup(11, Operation.ADD, 
+						Position.getInstance(2, 3),
+						Position.getInstance(3, 3),
+						Position.getInstance(3, 2))
+				.addGroup(3, Operation.NONE, 
+						Position.getInstance(3, 1))
+				.addGroup(9, Operation.ADD, 
+						Position.getInstance(3, 4),
+						Position.getInstance(3, 5),
+						Position.getInstance(4, 3),
+						Position.getInstance(4, 4))
+				.addGroup(2, Operation.DIVIDE, 
+						Position.getInstance(4, 1),
+						Position.getInstance(4, 2))
+				.addGroup(18, Operation.ADD, 
+						Position.getInstance(4, 5),
+						Position.getInstance(5, 3),
+						Position.getInstance(5, 4),
+						Position.getInstance(5, 5))
+				.addGroup(8, Operation.ADD, 
+						Position.getInstance(5, 0),
+						Position.getInstance(5, 1),
+						Position.getInstance(5, 2))
+				.build();
 	}
 	
 	public static Puzzle getPuzzle7() {
