@@ -1,6 +1,7 @@
 package com.kenkensolver.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,12 +45,17 @@ public class Group {
 		cells.add(c);
 	}
 
+	public void addCells(Collection<Cell> cs) {
+		cells.addAll(cs);
+	}
+
 	public boolean isSolved() {
-		boolean isSolved = true;
 		for (Cell cell : getCells()) {
-			isSolved &= cell.isSolved();
+			if (!cell.isSolved()) {
+				return false;
+			}
 		}
-		return isSolved;
+		return true;
 	}
 	
 	@Override
@@ -100,7 +106,7 @@ public class Group {
 		return mostBottomRight;
 	}
 	
-	protected List<Cell> getCellsAsList() {
+	public List<Cell> getCellsAsList() {
 		List<Cell> cellList = new ArrayList<Cell>();
 		cellList.addAll(cells);
 		return cellList;
@@ -114,7 +120,7 @@ public class Group {
 				getCellsAsList(), setOfPotentialSolution);
 		return !possibleOrderings.isEmpty();
 	}
-	
+
 	protected Set<List<Integer>> getAllPossibleOrderings(
 			List<Cell> cellList, Set<List<Integer>> possibleSolutions) {
 		
@@ -152,7 +158,14 @@ public class Group {
 		return possibleOrderings;
 	}
 
-	private boolean isSolutionOrderValid(List<Cell> cellList, List<Integer> ordering) {
+	private boolean containsDuplicates(List<Integer> list) {
+		// This works because java Sets do not allow duplicates
+		Set<Integer> set = new HashSet<Integer>();
+		set.addAll(list);
+		return set.size() != list.size();
+	}
+	
+	public boolean isSolutionOrderValid(List<Cell> cellList, List<Integer> ordering) {
 		if (cellList.size() != ordering.size()) {
 			return false;
 		}
@@ -169,7 +182,7 @@ public class Group {
 		}
 		return true;
 	}
-
+	
 	private boolean isSolutionShapeValid(List<Cell> cellList, List<Integer> ordering) {
 		// Get group row and column limits
 		Position mostTopLeft = getMostTopLeftPosition();
@@ -240,47 +253,6 @@ public class Group {
 		}
 		
 		return okForRows && okForCols;
-	}
-
-	private boolean containsDuplicates(List<Integer> list) {
-		// This works because java Sets do not allow duplicates
-		Set<Integer> set = new HashSet<Integer>();
-		set.addAll(list);
-		return set.size() != list.size();
-	}
-
-	public void refineSolutionSpace(Puzzle p) {
-		
-		// Get set of unique values for the group
-		Set<Integer> allValues = new HashSet<Integer>();
-		for (Cell c : cells) {
-			allValues.addAll(c.getPossibleValues());
-		}
-		
-		// Check all values for this group
-		for (Integer value : allValues) {
-			Set<Cell> cellsThatCanHaveThatValue = new HashSet<Cell>();
-			
-			// Get cells that could be that value 
-			for (Cell c : cells) {
-				if (c.getPossibleValues().contains(value)) {
-					cellsThatCanHaveThatValue.add(c);
-				}
-			}
-			
-			// If only one cell can be that value, make that value the only possible one
-			if (cellsThatCanHaveThatValue.size() == 1) {
-				Cell c = cellsThatCanHaveThatValue.iterator().next();
-				c.removeAllPossibleValuesExcept(value);
-			}
-			/*
-			 * TODO this last if-then is a problem because it doesn't look across the whole
-			 * puzzle for groups of possibilities that may rule out possbilities in other 
-			 * cells.
-			 */
-			
-		}
-		
 	}
 	
 }

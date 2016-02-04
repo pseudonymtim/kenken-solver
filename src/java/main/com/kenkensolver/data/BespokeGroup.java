@@ -38,6 +38,10 @@ public class BespokeGroup extends Group {
 		return possibleSolutions;
 	}
 	
+	public void setPossibleSolutions(Set<List<Integer>> possibleSolutions) {
+		this.possibleSolutions = possibleSolutions;
+	}
+	
 	@Override
 	public String toString() {
 		StringJoiner cellsJoiner = new StringJoiner(";");
@@ -65,7 +69,7 @@ public class BespokeGroup extends Group {
 	}
 	
 	@Override
-	protected boolean isSolutionValid(List<Integer> potentialGroupSolution) {
+	public boolean isSolutionValid(List<Integer> potentialGroupSolution) {
 		boolean isValidArithmetically = operation.isValidSolution(result, potentialGroupSolution); 
 		if (isValidArithmetically) {
 			return super.isSolutionValid(potentialGroupSolution);
@@ -74,140 +78,12 @@ public class BespokeGroup extends Group {
 			return false;
 		}
 	}
-
-	public void generatePossibleSolutions() {
-		
-		for (Cell c : getCells()) {
-			possibleSolutions = Utils.crossProduct(
-					possibleSolutions,
-					c.getPossibleValuesAsSetOfLists()); 
-		}
-		
-		possibleSolutions = Utils.removeDuplicateListsIgnoreOrdering(possibleSolutions);
-		
-	}
 	
 	@Override
 	public boolean isSolved() {
 		return possibleSolutions.size() == 1 && super.isSolved();
 	}
 
-	@Override
-	public void refineSolutionSpace(Puzzle p) {
-		
-		// Check if group is already solved
-		if (isSolved()) {
-			return;
-		}
-		
-		refinePossibleSolutions();
-		
-		updatePossCellValsBasedOnPossGroupSolnOrderings();
-			
-		updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(possibleSolutions, p);
-	}
-
-	private void updatePossCellValsBasedOnPossGroupSolnOrderings() {
-		// get all unique possible orderings for all orderings
-		List<Cell> cellList = getCellsAsList();
-		
-		Set<List<Integer>> possibleOrderings = getAllPossibleOrderings(cellList, possibleSolutions);
-		
-		for (int pos=0; pos<cellList.size(); pos++) {
-			
-			// TODO have some sort of null check here
-			Set<Integer> possibleValuesForNthCell = new HashSet<Integer>();
-			
-			// Get set of all numbers that appear in that position across all possible orderings
-			for (List<Integer> possibleOrdering : possibleOrderings) {
-				possibleValuesForNthCell.add(possibleOrdering.get(pos));
-			}
-			
-			// Assign those possibilities to the possible values for the cell
-			cellList.get(pos).removeAllValuesNotIn(possibleValuesForNthCell);
-		}
-	}
-
-	private void refinePossibleSolutions() {
-		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
-		
-		// Get possible solutions and valid cell values
-		for (List<Integer> possibleSolution : possibleSolutions) {
-			if (isSolutionValid(possibleSolution)) {
-				validGroupSolutions.add(possibleSolution);
-			}
-		}
-		
-		// Update set of possible solutions for group
-		possibleSolutions = validGroupSolutions;
-	}
-
-	// TODO rename this method to something more suitable
-	// TODO remove the puzzle argument
-	private void updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(
-			Set<List<Integer>> validGroupSolutions, Puzzle p) {
-		
-		Set<Integer> guaranteedValuesForGroup = Utils.getIntersection(validGroupSolutions);
-		
-		for (Integer value : guaranteedValuesForGroup) {
-			List<Cell> cellsInGroupWithValueAsPossibility = new ArrayList<Cell>();
-			
-			int minRow = -1;
-			int maxRow = -1;
-			int minCol = -1;
-			int maxCol = -1;
-			
-			for (Cell c : getCells()) {
-				if (c.getPossibleValues().contains(value)) {
-					
-					if (minRow==-1 || minRow > c.getPosition().getRowIndex()) {
-						minRow = c.getPosition().getRowIndex();
-					}
-					
-					if (maxRow==-1 || maxRow < c.getPosition().getRowIndex()) {
-						maxRow = c.getPosition().getRowIndex();
-					}
-					
-					if (minCol==-1 || minCol > c.getPosition().getColIndex()) {
-						minCol = c.getPosition().getColIndex();
-					}
-					
-					if (maxCol==-1 || maxCol < c.getPosition().getColIndex()) {
-						maxCol = c.getPosition().getColIndex();
-					}
-					
-					cellsInGroupWithValueAsPossibility.add(c);
-				}
-			}
-			
-			boolean atLeastOneCell = 1 <= cellsInGroupWithValueAsPossibility.size();
-			boolean valueOnlyInOneRow = minRow==maxRow;
-			boolean valueOnlyInOneCol = minCol==maxCol;
-			
-			if (valueOnlyInOneRow && atLeastOneCell) {
-				// remove value as possibility from other cells in that row.
-				Set<Cell> cellsInSameRow = cellsInGroupWithValueAsPossibility
-						.get(0).getRowGroup().getCells();
-				
-				for (Cell c : cellsInSameRow) {
-					if (!cellsInGroupWithValueAsPossibility.contains(c)) {
-						c.removeValueFromPossible(value);
-					}
-				}
-			}
-			
-			if (valueOnlyInOneCol && atLeastOneCell) {
-				// remove value as possibility from other cells in that column.
-				Set<Cell> cellsInSameCol = cellsInGroupWithValueAsPossibility
-						.get(0).getColumnGroup().getCells();
-				
-				for (Cell c : cellsInSameCol) {
-					if (!cellsInGroupWithValueAsPossibility.contains(c)) {
-						c.removeValueFromPossible(value);
-					}
-				}
-			}
-		}
-	}
+	
 	
 }

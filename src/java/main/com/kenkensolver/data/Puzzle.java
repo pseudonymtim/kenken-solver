@@ -41,6 +41,8 @@ public class Puzzle {
 		}
 	}
 	
+	// TODO: add some sort of boolean progress meter???
+	
 	public Set<BespokeGroup> getBespokeGroups() {
 		return bespokeGroups;
 	}
@@ -325,6 +327,28 @@ public class Puzzle {
 			}
 			bespokeGroups.removeAll(groupsToRemove);
 			
+//			// rows and columns for addition
+//			Set<Group> allRowColumnGroups = new HashSet<Group>();
+//			allRowColumnGroups.addAll(rowGroupMap.values());
+//			allRowColumnGroups.addAll(columnGroupMap.values());
+//			
+//			int additionResult = cumulativeAdd(size);
+//			int multiplicationResult = factorial(size);
+//			
+//			// Addition
+//			for (Group g : allRowColumnGroups) {
+//				BespokeGroup newBg = new BespokeGroup(additionResult, Operation.ADD);
+//				newBg.addCells(g.getCells());
+//				bespokeGroups.add(newBg);
+//			}
+//			
+//			// Multiplication
+//			for (Group g : allRowColumnGroups) {
+//				BespokeGroup newBg = new BespokeGroup(multiplicationResult, Operation.MULTIPLY);
+//				newBg.addCells(g.getCells());
+//				bespokeGroups.add(newBg);
+//			}
+			
 			// TODO: There should be more validation of the puzzle here, not sure what though
 			
 			// Validation: All bespoke groups with NONE operation only have one position
@@ -343,6 +367,22 @@ public class Puzzle {
 			}
 			
 			return puzzle;
+		}
+
+		private int cumulativeAdd(int num) {
+			int result = 0;
+			for (int i=1; i<=num; i++) {
+				result += i;
+			}
+			return result;
+		}
+
+		protected int factorial(int num) {
+			int result = 1;
+			for (int i=1; i<=num; i++) {
+				result *= i;
+			}
+			return result;
 		}
 	}
 
