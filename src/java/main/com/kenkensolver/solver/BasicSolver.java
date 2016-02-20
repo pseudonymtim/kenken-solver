@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.kenkensolver.data.BespokeGroup;
 import com.kenkensolver.data.Cell;
+import com.kenkensolver.data.CellUtils;
 import com.kenkensolver.data.Group;
 import com.kenkensolver.data.Puzzle;
 
@@ -105,10 +106,10 @@ public class BasicSolver implements Solver {
 		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(
 				group.getPossibleSolutions());
 		
-		Set<List<Integer>> possibleOrderings = new HashSet<List<Integer>>();
+		Set<List<Integer>> possibleOrderings = new HashSet<>();
 		
 		for (List<Integer> ordering : allOrderings) {
-			if (group.isSolutionOrderValid(cellList, ordering)) {
+			if (CellUtils.isSolutionOrderValid(cellList, ordering)) {
 				possibleOrderings.add(ordering);
 			}
 		}
@@ -116,7 +117,7 @@ public class BasicSolver implements Solver {
 		for (int pos=0; pos<cellList.size(); pos++) {
 			
 			// TODO have some sort of null check here
-			Set<Integer> possibleValuesForNthCell = new HashSet<Integer>();
+			Set<Integer> possibleValuesForNthCell = new HashSet<>();
 			
 			// Get set of all numbers that appear in that position across all possible orderings
 			for (List<Integer> possibleOrdering : possibleOrderings) {
@@ -127,7 +128,7 @@ public class BasicSolver implements Solver {
 			cellList.get(pos).removeAllValuesNotIn(possibleValuesForNthCell);
 		}
 	}
-
+	
 	// TODO rename this method to something more suitable
 	// TODO remove the puzzle argument
 	private void updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(
@@ -136,7 +137,7 @@ public class BasicSolver implements Solver {
 		Set<Integer> guaranteedValuesForGroup = Utils.getIntersection(bg.getPossibleSolutions());
 		
 		for (Integer value : guaranteedValuesForGroup) {
-			List<Cell> cellsInGroupWithValueAsPossibility = new ArrayList<Cell>();
+			List<Cell> cellsInGroupWithValueAsPossibility = new ArrayList<>();
 			
 			int minRow = -1;
 			int maxRow = -1;
@@ -177,7 +178,7 @@ public class BasicSolver implements Solver {
 				
 				for (Cell c : cellsInSameRow) {
 					if (!cellsInGroupWithValueAsPossibility.contains(c)) {
-						c.removeValueFromPossible(value);
+						c.removePossibleValue(value);
 					}
 				}
 			}
@@ -189,40 +190,24 @@ public class BasicSolver implements Solver {
 				
 				for (Cell c : cellsInSameCol) {
 					if (!cellsInGroupWithValueAsPossibility.contains(c)) {
-						c.removeValueFromPossible(value);
+						c.removePossibleValue(value);
 					}
 				}
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	private void refineRowColumnGroupSolutions(Group group) {
 		
 		// Get set of unique values for the group
-		Set<Integer> allValues = new HashSet<Integer>();
+		Set<Integer> allValues = new HashSet<>();
 		for (Cell c : group.getCells()) {
 			allValues.addAll(c.getPossibleValues());
 		}
 		
 		// Check all values for this group
 		for (Integer value : allValues) {
-			Set<Cell> cellsThatCanHaveThatValue = new HashSet<Cell>();
+			Set<Cell> cellsThatCanHaveThatValue = new HashSet<>();
 			
 			// Get cells that could be that value 
 			for (Cell c : group.getCells()) {
@@ -234,7 +219,7 @@ public class BasicSolver implements Solver {
 			// If only one cell can be that value, make that value the only possible one
 			if (cellsThatCanHaveThatValue.size() == 1) {
 				Cell c = cellsThatCanHaveThatValue.iterator().next();
-				c.removeAllPossibleValuesExcept(value);
+				c.removePossibleValuesExcept(value);
 			}
 			/*
 			 * TODO this last if-then is a problem because it doesn't look across the whole
@@ -247,7 +232,7 @@ public class BasicSolver implements Solver {
 	}
 
 	private void hydrateAllCellsWithPossibleValues(Collection<Cell> cells, int size) {
-		Set<Integer> possibleCellValues = new HashSet<Integer>();
+		Set<Integer> possibleCellValues = new HashSet<>();
 		
 		for (int i=1; i<=size; i++) {
 			possibleCellValues.add(i);
@@ -262,12 +247,12 @@ public class BasicSolver implements Solver {
 		// Go through each group and figure out solutions
 		for (BespokeGroup group : groups) {
 			
-			Set<List<Integer>> possibleSolutions = new HashSet<List<Integer>>();
+			Set<List<Integer>> possibleSolutions = new HashSet<>();
 			
 			for (Cell c : group.getCells()) {
 				possibleSolutions = Utils.crossProduct(
 						possibleSolutions,
-						c.getPossibleValuesAsSetOfLists()); 
+						getPossibleValuesAsSetOfLists(c)); 
 			}
 			
 			possibleSolutions = Utils.removeDuplicateListsIgnoreOrdering(possibleSolutions);
@@ -279,6 +264,17 @@ public class BasicSolver implements Solver {
 		}
 	}
 
+	private Set<List<Integer>> getPossibleValuesAsSetOfLists(Cell c) {
+		Set<List<Integer>> posVals = new HashSet<>();
+		
+		for (Integer possibleValue : c.getPossibleValues()) {
+			List<Integer> newList = new ArrayList<>();
+			newList.add(possibleValue);
+			posVals.add(newList);
+		}
+		
+		return posVals;
+	}
 	
 	
 	/*

@@ -1,14 +1,12 @@
 package com.kenkensolver.data;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import com.kenkensolver.solver.Utils;
-
 public class BespokeGroup extends Group {
+	
 	private final int result;
 	private final Operation operation;
 	
@@ -23,7 +21,7 @@ public class BespokeGroup extends Group {
 		super();
 		result = res;
 		operation = op;
-		possibleSolutions = new HashSet<List<Integer>>();
+		possibleSolutions = new HashSet<>();
 	}
 
 	public int getResult() {

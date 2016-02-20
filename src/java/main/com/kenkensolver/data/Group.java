@@ -10,18 +10,23 @@ import java.util.StringJoiner;
 import com.kenkensolver.solver.Utils;
 
 public class Group {
-	private final Set<Cell> cells;
 	
-	public Group() {
-		cells = new HashSet<Cell>();
-	}
+	private final Set<Cell> cells = new HashSet<>();
+	
+	public Group() { }
 	
 	public Set<Cell> getCells() {
 		return cells;
 	}
 	
+	public List<Cell> getCellsAsList() {
+		List<Cell> cellList = new ArrayList<>();
+		cellList.addAll(cells);
+		return cellList;
+	}
+	
 	public Set<Position> getPositions() {
-		Set<Position> positions = new HashSet<Position>();
+		Set<Position> positions = new HashSet<>();
 		for (Cell c : cells) {
 			positions.add(c.getPosition());
 		}
@@ -56,16 +61,6 @@ public class Group {
 			}
 		}
 		return true;
-	}
-	
-	@Override
-	public String toString() {
-		StringJoiner cellsJoiner = new StringJoiner(";");
-		for (Cell c : cells) {
-			cellsJoiner.add(c.getId() + c.getPosition().toString());
-		}
-		
-		return "Group={Cells={" + cellsJoiner.toString() + "}}";
 	}
 
 	public Position getMostTopLeftPosition() {
@@ -106,84 +101,55 @@ public class Group {
 		return mostBottomRight;
 	}
 	
-	public List<Cell> getCellsAsList() {
-		List<Cell> cellList = new ArrayList<Cell>();
-		cellList.addAll(cells);
-		return cellList;
+	@Override
+	public String toString() {
+		StringJoiner cellsJoiner = new StringJoiner(";");
+		for (Cell c : cells) {
+			cellsJoiner.add(c.getId() + c.getPosition().toString());
+		}
+		
+		return "Group={Cells={" + cellsJoiner.toString() + "}}";
 	}
 	
-	protected boolean isSolutionValid(List<Integer> potentialSolution) {
-		Set<List<Integer>> setOfPotentialSolution = new HashSet<List<Integer>>();
-		setOfPotentialSolution.add(potentialSolution);
-		
-		Set<List<Integer>> possibleOrderings = getAllPossibleOrderings(
-				getCellsAsList(), setOfPotentialSolution);
-		return !possibleOrderings.isEmpty();
-	}
-
-	protected Set<List<Integer>> getAllPossibleOrderings(
-			List<Cell> cellList, Set<List<Integer>> possibleSolutions) {
-		
-		// Returns empty set if the input conditions are wrong
-		if (cellList == null || possibleSolutions == null
-				|| cellList.isEmpty() || possibleSolutions.isEmpty()) {
-			return new HashSet<List<Integer>>();
-		}
-
-		/*
-		 * TODO Assuming that all possible solutions have the same number of items
-		 * as the cell list does. 
-		 */
-		
+	public boolean isSolutionValid(List<Integer> potentialSolution) {
+		Set<List<Integer>> possibleSolutions = new HashSet<>();
+		possibleSolutions.add(potentialSolution);
+	
+		List<Cell> cellList = getCellsAsList();
 		Set<List<Integer>> allOrderings = Utils.generateAllUniqueOrderings(possibleSolutions);
-		Set<List<Integer>> possibleOrderings = new HashSet<List<Integer>>();
+		
+		/*
+		 * As soon as you find a possible ordering, return true. 
+		 */
 		
 		// Loop through the orderings and test each one
 		for (List<Integer> ordering : allOrderings) {
 			
 			// Check if the shape of the group supports the ordering
-			if (isSolutionOrderValid(cellList, ordering)) {
+			if (CellUtils.isSolutionOrderValid(cellList, ordering)) {
 				if (containsDuplicates(ordering)) {
 					if (isSolutionShapeValid(cellList, ordering)) {
-						possibleOrderings.add(ordering);
+						return true;
 					}
 				}
 				else {
-					possibleOrderings.add(ordering);
+					return true;
 				}
 			}
 			
 		}
 		
-		return possibleOrderings;
+		return false;
 	}
 
-	private boolean containsDuplicates(List<Integer> list) {
+	protected boolean containsDuplicates(List<Integer> list) {
 		// This works because java Sets do not allow duplicates
 		Set<Integer> set = new HashSet<Integer>();
 		set.addAll(list);
 		return set.size() != list.size();
 	}
 	
-	public boolean isSolutionOrderValid(List<Cell> cellList, List<Integer> ordering) {
-		if (cellList.size() != ordering.size()) {
-			return false;
-		}
-		
-		// Check if this ordering is possible given possible cell values
-		for (int i=0; i<ordering.size(); i++) {
-			Integer currValue = ordering.get(i);
-			Cell currCell = cellList.get(i);
-			
-			// Check if the possible cell values line up with what's assigned
-			if (!currCell.getPossibleValues().contains(currValue)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean isSolutionShapeValid(List<Cell> cellList, List<Integer> ordering) {
+	protected boolean isSolutionShapeValid(List<Cell> cellList, List<Integer> ordering) {
 		// Get group row and column limits
 		Position mostTopLeft = getMostTopLeftPosition();
 		Position mostBottomRight = getMostBottomRightPosition();

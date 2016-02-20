@@ -1,10 +1,11 @@
 package com.kenkensolver.data;
 
 public final class Position implements Comparable<Position>{
+	
 	private final int rowIndex;
 	private final int colIndex;
 	
-	private Position(int rowIdx, int colIdx) {
+	public Position(int rowIdx, int colIdx) {
 		rowIndex = rowIdx;
 		colIndex = colIdx;
 	}
@@ -42,11 +43,6 @@ public final class Position implements Comparable<Position>{
 	@Override
 	public String toString() {
 		return "(" + rowIndex + "," + colIndex + ")";
-	}
-	
-	public static Position getInstance(int rowIndex, int colIndex) {
-		// TODO add throw exception here if args are passed in as 0 or negative
-		return new Position(rowIndex, colIndex);
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class Puzzle {
 	}
 	
 	public Set<Cell> getAllCells() {
-		Set<Cell> cells = new HashSet<Cell>();
+		Set<Cell> cells = new HashSet<>();
 		cells.addAll(positionCellMap.values());
 		return cells;
 	}
@@ -97,7 +97,7 @@ public class Puzzle {
 		sb.append("\n");
 		
 		sb.append("Cells (" + positionCellMap.size() + "):" + "\n");
-		List<Position> positions = new ArrayList<Position>();
+		List<Position> positions = new ArrayList<>();
 		positions.addAll(positionCellMap.keySet());
 		Collections.sort(positions);
 		for (Position pos : positions) {
@@ -166,7 +166,7 @@ public class Puzzle {
 					asciiStr.append(currCell.toStringAscii(lineInCell, CELL_WIDTH, CELL_HEIGHT));
 					
 					//Position to the right of current cell
-					Position posRight = Position.getInstance(
+					Position posRight = new Position(
 							currCell.getPosition().getRowIndex(),
 							currCell.getPosition().getColIndex() + 1);
 					
@@ -192,7 +192,7 @@ public class Puzzle {
 				Cell currCell = cellArray[currRow][currCol];
 				Set<Position> currGroupPositions = currCell.getBespokeGroup().getPositions();
 				
-				Position posBelow = Position.getInstance(
+				Position posBelow = new Position(
 						currCell.getPosition().getRowIndex() + 1,
 						currCell.getPosition().getColIndex());
 				
@@ -209,11 +209,11 @@ public class Puzzle {
 				// put char dividing cells horizontally here
 				
 				//Position to the right of current cell
-				Position posToTheRight = Position.getInstance(
+				Position posToTheRight = new Position(
 						currCell.getPosition().getRowIndex(), 
 						currCell.getPosition().getColIndex() + 1);
 				
-				Position posToTheRightAndBelow = Position.getInstance(
+				Position posToTheRightAndBelow = new Position(
 						currCell.getPosition().getRowIndex() + 1, 
 						currCell.getPosition().getColIndex() + 1);
 				
@@ -243,10 +243,10 @@ public class Puzzle {
 		private int size;
 		
 		public Builder() {
-			bespokeGroups = new HashSet<BespokeGroup>();
-			rowGroupMap = new HashMap<Integer, Group>();
-			columnGroupMap = new HashMap<Integer, Group>();
-			positionCellMap = new HashMap<Position, Cell>();
+			bespokeGroups = new HashSet<>();
+			rowGroupMap = new HashMap<>();
+			columnGroupMap = new HashMap<>();
+			positionCellMap = new HashMap<>();
 			size = 0;
 		}
 		
@@ -319,7 +319,7 @@ public class Puzzle {
 		
 		public Puzzle build() {
 			// Remove all groups that do not have any positions assigned to them
-			Set<BespokeGroup> groupsToRemove = new HashSet<BespokeGroup>();
+			Set<BespokeGroup> groupsToRemove = new HashSet<>();
 			for (BespokeGroup bg : bespokeGroups) {
 				if (bg.getPositions().isEmpty()) {
 					groupsToRemove.add(bg);
@@ -369,14 +369,6 @@ public class Puzzle {
 			return puzzle;
 		}
 
-		private int cumulativeAdd(int num) {
-			int result = 0;
-			for (int i=1; i<=num; i++) {
-				result += i;
-			}
-			return result;
-		}
-
 		protected int factorial(int num) {
 			int result = 1;
 			for (int i=1; i<=num; i++) {
@@ -387,7 +379,7 @@ public class Puzzle {
 	}
 
 	public Set<Group> getAllGroups() {
-		Set<Group> groups = new HashSet<Group>();
+		Set<Group> groups = new HashSet<>();
 		groups.addAll(bespokeGroups);
 		groups.addAll(rowGroupMap.values());
 		groups.addAll(columnGroupMap.values());
