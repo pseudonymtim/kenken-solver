@@ -220,6 +220,25 @@ public class Group {
 		
 		return okForRows && okForCols;
 	}
+
+	public int getRowSpan() {
+		return getSpan(a -> a.getRowIndex());
+	}
+
+	public int getColumnSpan() {
+		return getSpan(a -> a.getColIndex());
+	}
+	
+	protected int getSpan(GetPositionIndex getPositionIndex) {
+		Position topLeft = getMostTopLeftPosition();
+		Position bottomRight = getMostBottomRightPosition();
+		return getPositionIndex.from(bottomRight) - getPositionIndex.from(topLeft) + 1;
+	}
+	
+	@FunctionalInterface
+	private interface GetPositionIndex {
+		public int from(Position position);
+	}
 	
 }
 

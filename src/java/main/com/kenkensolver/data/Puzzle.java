@@ -19,7 +19,7 @@ public class Puzzle {
 	private static final char THIN_CORNER = '+';
 	
 	private int size;
-	private Set<BespokeGroup> bespokeGroups;
+	private Set<Cage> bespokeGroups;
 	private Map<Integer, Group> rowGroupMap;
 	private Map<Integer, Group> columnGroupMap;
 	private Map<Position, Cell> positionCellMap;
@@ -27,7 +27,7 @@ public class Puzzle {
 	
 	private Puzzle() { }
 	
-	private Puzzle(int s, Set<BespokeGroup> bg, Map<Integer, Group> rgm, 
+	private Puzzle(int s, Set<Cage> bg, Map<Integer, Group> rgm, 
 			Map<Integer, Group> cgm, Map<Position, Cell> pcm) {
 		size = s;
 		bespokeGroups = bg;
@@ -43,7 +43,7 @@ public class Puzzle {
 	
 	// TODO: add some sort of boolean progress meter???
 	
-	public Set<BespokeGroup> getBespokeGroups() {
+	public Set<Cage> getBespokeGroups() {
 		return bespokeGroups;
 	}
 
@@ -109,7 +109,7 @@ public class Puzzle {
 		sb.append("\n");
 		
 		sb.append("Bespoke Groups (" + bespokeGroups.size() + "):\n");
-		for (BespokeGroup g : bespokeGroups) {
+		for (Cage g : bespokeGroups) {
 			sb.append("  " + g.toString() + "\n");
 		}
 		sb.append("\n");
@@ -171,7 +171,7 @@ public class Puzzle {
 							currCell.getPosition().getColIndex() + 1);
 					
 					// check if next cell to the right is in the current group
-					if (currCell.getBespokeGroup().getPositions().contains(posRight)) {
+					if (currCell.getCage().getPositions().contains(posRight)) {
 						asciiStr.append(THIN_COLUMN_SEPERATOR);
 					}
 					else {
@@ -190,7 +190,7 @@ public class Puzzle {
 			for (int currCol=0; currCol<size; currCol++) {
 				
 				Cell currCell = cellArray[currRow][currCol];
-				Set<Position> currGroupPositions = currCell.getBespokeGroup().getPositions();
+				Set<Position> currGroupPositions = currCell.getCage().getPositions();
 				
 				Position posBelow = new Position(
 						currCell.getPosition().getRowIndex() + 1,
@@ -235,24 +235,27 @@ public class Puzzle {
 		return asciiStr.toString();
 	}
 
+	public Set<Group> getAllGroups() {
+		Set<Group> groups = new HashSet<>();
+		groups.addAll(bespokeGroups);
+		groups.addAll(rowGroupMap.values());
+		groups.addAll(columnGroupMap.values());
+		return groups;
+	}
+	
 	public static class Builder {
-		private Set<BespokeGroup> bespokeGroups;
-		private Map<Integer, Group> rowGroupMap;
-		private Map<Integer, Group> columnGroupMap;
-		private Map<Position, Cell> positionCellMap;
-		private int size;
+		private Set<Cage> cages = new HashSet<>();
+		private Map<Integer, Group> rowGroupMap = new HashMap<>();
+		private Map<Integer, Group> columnGroupMap = new HashMap<>();
+		private Map<Position, Cell> positionCellMap = new HashMap<>();
+		private int size = 0;
 		
-		public Builder() {
-			bespokeGroups = new HashSet<>();
-			rowGroupMap = new HashMap<>();
-			columnGroupMap = new HashMap<>();
-			positionCellMap = new HashMap<>();
-			size = 0;
-		}
+		public Builder() { }
 		
-		public Builder addGroup(int result, Operation operation, Position... positions) {
-			BespokeGroup newBespokeGroup = new BespokeGroup(result, operation);
-			bespokeGroups.add(newBespokeGroup);
+		public Builder addCage(int result, Operation operation, Position... positions) {
+			
+			Cage newCage = new Cage(result, operation);
+			cages.add(newCage);
 			
 			for (Position pos : positions) {
 				
@@ -260,20 +263,19 @@ public class Puzzle {
 				size = Math.max(size, pos.getRowIndex() + 1);
 				size = Math.max(size, pos.getColIndex() + 1);
 
-				// Figure out if position has already been assigned to a group
 				if (positionCellMap.containsKey(pos)) {
 					// Position already specified, reassign cell to new group
 					
 					// Get the corresponding cell for that position
 					Cell cell = positionCellMap.get(pos);
-					cell.setBespokeGroup(newBespokeGroup);
+					cell.setCage(newCage);
 					
 					// Add existing cell to new bespoke group
-					newBespokeGroup.addCell(cell);
+					newCage.addCell(cell);
 					
 					// Remove this position from the cells current group 
-					BespokeGroup oldBespokeGroup = cell.getBespokeGroup();
-					oldBespokeGroup.removeCell(cell);
+					Cage oldCage = cell.getCage();
+					oldCage.removeCell(cell);
 				}
 				else {
 					// New position being specified
@@ -281,13 +283,13 @@ public class Puzzle {
 					Group columnGroup = getColumnGroup(pos);
 					
 					// Create the new cell
-					Cell newCell = new Cell(pos, newBespokeGroup, rowGroup, columnGroup);
+					Cell newCell = new Cell(pos, newCage, rowGroup, columnGroup);
 					
 					// Add cell to position cell map
 					positionCellMap.put(pos, newCell);
 					
 					// Add cell to all appropriate groups
-					newBespokeGroup.addCell(newCell);
+					newCage.addCell(newCell);
 					rowGroup.addCell(newCell);
 					columnGroup.addCell(newCell);
 				}
@@ -319,35 +321,13 @@ public class Puzzle {
 		
 		public Puzzle build() {
 			// Remove all groups that do not have any positions assigned to them
-			Set<BespokeGroup> groupsToRemove = new HashSet<>();
-			for (BespokeGroup bg : bespokeGroups) {
+			Set<Cage> groupsToRemove = new HashSet<>();
+			for (Cage bg : cages) {
 				if (bg.getPositions().isEmpty()) {
 					groupsToRemove.add(bg);
 				}
 			}
-			bespokeGroups.removeAll(groupsToRemove);
-			
-//			// rows and columns for addition
-//			Set<Group> allRowColumnGroups = new HashSet<Group>();
-//			allRowColumnGroups.addAll(rowGroupMap.values());
-//			allRowColumnGroups.addAll(columnGroupMap.values());
-//			
-//			int additionResult = cumulativeAdd(size);
-//			int multiplicationResult = factorial(size);
-//			
-//			// Addition
-//			for (Group g : allRowColumnGroups) {
-//				BespokeGroup newBg = new BespokeGroup(additionResult, Operation.ADD);
-//				newBg.addCells(g.getCells());
-//				bespokeGroups.add(newBg);
-//			}
-//			
-//			// Multiplication
-//			for (Group g : allRowColumnGroups) {
-//				BespokeGroup newBg = new BespokeGroup(multiplicationResult, Operation.MULTIPLY);
-//				newBg.addCells(g.getCells());
-//				bespokeGroups.add(newBg);
-//			}
+			cages.removeAll(groupsToRemove);
 			
 			// TODO: There should be more validation of the puzzle here, not sure what though
 			
@@ -362,28 +342,11 @@ public class Puzzle {
 				System.out.println("Not all positions have been assigned to a group");
 			}
 			else {
-				puzzle = new Puzzle(size, bespokeGroups, rowGroupMap, 
-						columnGroupMap, positionCellMap); 
+				puzzle = new Puzzle(size, cages, rowGroupMap, columnGroupMap, positionCellMap); 
 			}
 			
 			return puzzle;
 		}
-
-		protected int factorial(int num) {
-			int result = 1;
-			for (int i=1; i<=num; i++) {
-				result *= i;
-			}
-			return result;
-		}
-	}
-
-	public Set<Group> getAllGroups() {
-		Set<Group> groups = new HashSet<>();
-		groups.addAll(bespokeGroups);
-		groups.addAll(rowGroupMap.values());
-		groups.addAll(columnGroupMap.values());
-		return groups;
 	}
 	
 }

@@ -14,15 +14,15 @@ public class Cell {
 	private final Set<Integer> possibleValues;
 	
 	private int id;
-	private BespokeGroup bespokeGroup;
+	private Cage cage;
 	private Group rowGroup;
 	private Group columnGroup;
 	
-	public Cell(Position pos, BespokeGroup bg, Group rg, Group cg) {
+	public Cell(Position pos, Cage bg, Group rg, Group cg) {
 		id = ID_COUNTER++;
 		position = pos;
 		possibleValues = new HashSet<>();
-		bespokeGroup = bg;
+		cage = bg;
 		rowGroup = rg;
 		columnGroup = cg;
 	}
@@ -39,8 +39,8 @@ public class Cell {
 		return possibleValues;
 	}
 
-	public BespokeGroup getBespokeGroup() {
-		return bespokeGroup;
+	public Cage getCage() {
+		return cage;
 	}
 
 	public Group getRowGroup() {
@@ -51,8 +51,8 @@ public class Cell {
 		return columnGroup;
 	}
 	
-	public void setBespokeGroup(BespokeGroup bespokeGroup) {
-		this.bespokeGroup = bespokeGroup;
+	public void setCage(Cage bespokeGroup) {
+		this.cage = bespokeGroup;
 	}
 
 	public void setRowGroup(Group rowGroup) {
@@ -141,9 +141,9 @@ public class Cell {
 		String cellLine = "                           ";
 		
 		// is string most top, and if tie, most left?
-		if (lineInCell == 1 && position.equals(bespokeGroup.getMostTopLeftPosition())) {
-			cellLine = " " + bespokeGroup.getResult() + 
-					bespokeGroup.getOperation().getOperationSymbol() + cellLine;
+		if (lineInCell == 1 && position.equals(cage.getMostTopLeftPosition())) {
+			cellLine = " " + cage.getResult() + 
+					cage.getOperation().getOperationSymbol() + cellLine;
 		}
 		else if (lineInCell == (cellHeight/2)+1) {
 			String valueStr = "";

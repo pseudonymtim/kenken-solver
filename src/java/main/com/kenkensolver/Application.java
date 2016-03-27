@@ -7,7 +7,7 @@ public class Application {
 	
 	public static void main(String[] args) {
 
-		Puzzle puzzle = PuzzleDefs.getPuzzle1();
+		Puzzle puzzle = PuzzleDefs.getPuzzle4();
 		
 		System.out.println(puzzle.toStringAscii());
 		

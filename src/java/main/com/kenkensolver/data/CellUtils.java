@@ -5,10 +5,7 @@ import java.util.List;
 public class CellUtils {
 	
 	public static boolean isSolutionOrderValid(List<Cell> cells, List<Integer> solution) {
-		if (cells == null || solution == null) {
-			return false;
-		}
-		else if (cells.size() != solution.size()) {
+		if (cells == null || solution == null || cells.size() != solution.size()) {
 			return false;
 		}
 		

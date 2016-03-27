@@ -2,11 +2,12 @@ package com.kenkensolver.solver;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.kenkensolver.data.BespokeGroup;
+import com.kenkensolver.data.Cage;
 import com.kenkensolver.data.Cell;
 import com.kenkensolver.data.CellUtils;
 import com.kenkensolver.data.Group;
@@ -45,7 +46,7 @@ public class BasicSolver implements Solver {
 			}
 			
 			int possibleGroupSolutions = 0;
-			for (BespokeGroup bg : p.getBespokeGroups()) {
+			for (Cage bg : p.getBespokeGroups()) {
 				possibleGroupSolutions += bg.getPossibleSolutions().size();
 			}
 			
@@ -64,8 +65,8 @@ public class BasicSolver implements Solver {
 		
 		for (Group group : p.getAllGroups()) {
 			if (!group.isSolved()) {
-				if (group instanceof BespokeGroup) {
-					refineBespokeGroupSolutions((BespokeGroup)group, p);
+				if (group instanceof Cage) {
+					refineBespokeGroupSolutions((Cage)group, p);
 				}
 				else {
 					refineRowColumnGroupSolutions(group);
@@ -75,7 +76,7 @@ public class BasicSolver implements Solver {
 		
 	}
 
-	private void refineBespokeGroupSolutions(BespokeGroup group, Puzzle p) {
+	private void refineBespokeGroupSolutions(Cage group, Puzzle p) {
 
 		refinePossibleSolutions(group);
 		
@@ -85,7 +86,7 @@ public class BasicSolver implements Solver {
 		
 	}
 
-	private void refinePossibleSolutions(BespokeGroup group) {
+	private void refinePossibleSolutions(Cage group) {
 		Set<List<Integer>> validGroupSolutions = new HashSet<List<Integer>>();
 		
 		// Get possible solutions and valid cell values
@@ -99,7 +100,7 @@ public class BasicSolver implements Solver {
 		group.setPossibleSolutions(validGroupSolutions);
 	}
 
-	private void updatePossCellValsBasedOnPossGroupSolnOrderings(BespokeGroup group) {
+	private void updatePossCellValsBasedOnPossGroupSolnOrderings(Cage group) {
 		// get all unique possible orderings for all orderings
 		List<Cell> cellList = group.getCellsAsList();
 		
@@ -132,7 +133,7 @@ public class BasicSolver implements Solver {
 	// TODO rename this method to something more suitable
 	// TODO remove the puzzle argument
 	private void updatePossibleCellValuesUsingGuaranteedGroupSolutionValues(
-			BespokeGroup bg, Puzzle p) {
+			Cage bg, Puzzle p) {
 		
 		Set<Integer> guaranteedValuesForGroup = Utils.getIntersection(bg.getPossibleSolutions());
 		
@@ -243,57 +244,84 @@ public class BasicSolver implements Solver {
 		}
 	}
 
-	private void processGroupsGenSolutions(Set<BespokeGroup> groups) {
+	private void processGroupsGenSolutions(Set<Cage> cages) {
 		// Go through each group and figure out solutions
-		for (BespokeGroup group : groups) {
+		for (Cage cage : cages) {
+			Set<Integer> possibleSolutionValues = new HashSet<>();
 			
-			Set<List<Integer>> possibleSolutions = new HashSet<>();
-			
-			for (Cell c : group.getCells()) {
-				possibleSolutions = Utils.crossProduct(
-						possibleSolutions,
-						getPossibleValuesAsSetOfLists(c)); 
+			for (Cell c : cage.getCells()) {
+				possibleSolutionValues.addAll(c.getPossibleValues());
 			}
 			
-			possibleSolutions = Utils.removeDuplicateListsIgnoreOrdering(possibleSolutions);
+			int rows = cage.getRowSpan();
+			int columns = cage.getColumnSpan();
+			int allowedRepeats = Math.min(rows, columns) - 1;
 			
-			group.setPossibleSolutions(possibleSolutions);
-
-			// TODO: only keep solutions that are valid??
+			List<Integer> allowedValues = new ArrayList<>();
+			for (int i=0; i<=allowedRepeats; i++) {
+				allowedValues.addAll(possibleSolutionValues);
+			}
 			
+			int numberOfCells = cage.getCells().size();
+			cage.setPossibleSolutions(generatePossibleSolutions(allowedValues, numberOfCells));
 		}
 	}
 
-	private Set<List<Integer>> getPossibleValuesAsSetOfLists(Cell c) {
-		Set<List<Integer>> posVals = new HashSet<>();
+	protected Set<List<Integer>> generatePossibleSolutions(
+			List<Integer> allowedValues, int solutionSize) 
+			throws IllegalArgumentException {
 		
-		for (Integer possibleValue : c.getPossibleValues()) {
-			List<Integer> newList = new ArrayList<>();
-			newList.add(possibleValue);
-			posVals.add(newList);
+		if (solutionSize < 1 || solutionSize > allowedValues.size()) {
+			throw new IllegalArgumentException("Argument number 2 must have value greater than "
+					+ "zero and less than the number of allow values, value passed was "
+					+ "[" + solutionSize + "].");
 		}
 		
-		return posVals;
+		if (allowedValues == null || allowedValues.isEmpty()) {
+			throw new IllegalArgumentException("Argument number 1 must not be null or empty.");
+		}
+		
+		Collections.sort(allowedValues);
+		
+		Set<List<Integer>> possibleSolutions = new HashSet<>();
+		
+		if (solutionSize == 1) {
+			for (Integer possibleValue : allowedValues) {
+				List<Integer> possibleSolution = new ArrayList<>();
+				possibleSolution.add(possibleValue);
+				possibleSolutions.add(possibleSolution);
+			}
+		}
+		else {
+			Integer currVal = null;
+			for (int i=0; i<allowedValues.size()-solutionSize+1; i++) {
+				
+				// If the next number was the same as the last number, skip it
+				if (allowedValues.get(i).equals(currVal)) {
+					continue;
+				}
+				else {
+					currVal = allowedValues.get(i);
+				}
+				
+				List<Integer> reducedList = allowedValues.subList(i+1, allowedValues.size());
+				Set<List<Integer>> solutions = generatePossibleSolutions(reducedList, solutionSize-1);
+				
+				for (List<Integer> solution : solutions) {
+					solution.add(0, currVal);
+				}
+				
+				possibleSolutions.addAll(solutions);
+			}
+		}
+		
+		return possibleSolutions;
 	}
 	
 	
 	/*
 	 * TODO: Read this...
 	 * 
-	 * GOT IT
-	 * 
-	 * Find possible solution(s) for a group
-	 * iterate through all cells and update based on those possibilities.
-	 */
-	
-	/*
-	 * Start with puzzle
-	 * Iterate through cells
-	 * - populate with possible values
-	 * 
-	 */
-	
-	/*
 	 * The base case to stop repeating the processing is when all the cells have only 
 	 * one possible value left.
 	 * 

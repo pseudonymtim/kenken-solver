@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-public class BespokeGroup extends Group {
+public class Cage extends Group {
 	
 	private final int result;
 	private final Operation operation;
@@ -17,7 +17,7 @@ public class BespokeGroup extends Group {
 	// they are missing most of their entries, which explains why some of the
 	// cells are not being updated.
 	
-	public BespokeGroup(int res, Operation op) {
+	public Cage(int res, Operation op) {
 		super();
 		result = res;
 		operation = op;
@@ -82,6 +82,4 @@ public class BespokeGroup extends Group {
 		return possibleSolutions.size() == 1 && super.isSolved();
 	}
 
-	
-	
 }

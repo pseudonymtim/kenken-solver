@@ -50,15 +50,14 @@ public enum Operation {
 	public String getOperationSymbol() {
 		return operatorSymbol;
 	}
- 
- 	public abstract boolean isValidSolution(int result, int... args);
+	
+	protected abstract boolean isValidSolution(int result, int... args);
  	
  	public boolean isValidSolution(int result, List<Integer> args) {
  		int[] argArray = new int[args.size()];
- 		int i = 0;
- 		for (Integer arg : args) {
- 			argArray[i] = arg.intValue();
- 			i++;
+ 		for (int i=0; i<args.size(); i++) {
+ 			// TODO: Put some sort of null check here and throw exception?
+ 			argArray[i] = args.get(i);
  		}
  		return isValidSolution(result, argArray);
  	}
@@ -68,7 +67,7 @@ public enum Operation {
  		return name();
  	}
  	
-	private static boolean isValidSolution(int result, Operation op, OpFunction func, int... args) {
+	protected boolean isValidSolution(int result, Operation op, OpFunction func, int... args) {
 		int[] values = args.clone();
 		
 		if (Operation.SUBTRACT.equals(op) || Operation.DIVIDE.equals(op)) {
@@ -98,7 +97,7 @@ public enum Operation {
 	}
 	
 	@FunctionalInterface
-	interface OpFunction {
+	protected interface OpFunction {
 		public int apply(int a, int b);
 	}
 }
