@@ -33,6 +33,8 @@ public class Application {
 			System.out.println(puzzle.toStringAscii());
 		}
 		
+		System.out.println("End of the puzzles.");
+		
 
 	}
 }

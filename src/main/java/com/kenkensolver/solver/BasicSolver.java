@@ -26,7 +26,6 @@ public class BasicSolver implements Solver {
 		// process the groups
 		processGroupsGenSolutions(p.getBespokeGroups());
 		
-		int puzzlePass = 1;
 		int cellsSolved = 0;
 		int possibleCellValues = 0;
 		int possibleGroupSolutions = 0;
@@ -286,14 +285,14 @@ public class BasicSolver implements Solver {
 			List<Integer> allowedValues, int solutionSize) 
 			throws IllegalArgumentException {
 		
+		if (allowedValues == null || allowedValues.isEmpty()) {
+			throw new IllegalArgumentException("Argument number 1 must not be null or empty.");
+		}
+		
 		if (solutionSize < 1 || solutionSize > allowedValues.size()) {
 			throw new IllegalArgumentException("Argument number 2 must have value greater than "
 					+ "zero and less than the number of allow values, value passed was "
 					+ "[" + solutionSize + "].");
-		}
-		
-		if (allowedValues == null || allowedValues.isEmpty()) {
-			throw new IllegalArgumentException("Argument number 1 must not be null or empty.");
 		}
 		
 		Collections.sort(allowedValues);

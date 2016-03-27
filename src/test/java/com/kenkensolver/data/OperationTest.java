@@ -66,9 +66,8 @@ public class OperationTest {
 	@Test
 	public void testNone() {
 		assertTrue(Operation.NONE.isValidSolution(2, 2));
-		assertTrue(Operation.NONE.isValidSolution(2, 3));
-		assertTrue(Operation.NONE.isValidSolution(-1, 4));
-		
+		assertFalse(Operation.NONE.isValidSolution(2, 3));
+		assertFalse(Operation.NONE.isValidSolution(-1, 4));
 		assertFalse(Operation.NONE.isValidSolution(2, 2,3));
 		assertFalse(Operation.NONE.isValidSolution(3, 6,3,1));
 	}

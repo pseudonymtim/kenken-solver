@@ -4,8 +4,6 @@ import com.kenkensolver.data.Operation;
 import com.kenkensolver.data.Position;
 import com.kenkensolver.data.Puzzle;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class PuzzleDefs {
 	
 	public static Puzzle getPuzzle1() {
@@ -485,14 +483,6 @@ public class PuzzleDefs {
 						new Position(8, 7),
 						new Position(8, 8))
 				.build();
-	}
-	
-	public static Puzzle getPuzzle6() {
-		throw new NotImplementedException();
-	}
-	
-	public static Puzzle getPuzzle7() {
-		throw new NotImplementedException();
 	}
 
 }
