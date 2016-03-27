@@ -488,64 +488,10 @@ public class PuzzleDefs {
 	}
 	
 	public static Puzzle getPuzzle6() {
-		return new Puzzle.Builder()
-				.addCage(13, Operation.ADD, 
-						new Position(0, 0),
-						new Position(0, 1),
-						new Position(1, 0),
-						new Position(1, 1))
-				.addCage(180, Operation.MULTIPLY, 
-						new Position(0, 2),
-						new Position(0, 3),
-						new Position(0, 4),
-						new Position(1, 3))
-				.addCage(9, Operation.ADD, 
-						new Position(0, 5),
-						new Position(1, 5),
-						new Position(2, 5))
-				.addCage(2, Operation.NONE, 
-						new Position(1, 2))
-				.addCage(20, Operation.MULTIPLY, 
-						new Position(1, 4),
-						new Position(2, 4))
-				.addCage(15, Operation.ADD, 
-						new Position(2, 0),
-						new Position(3, 0),
-						new Position(4, 0))
-				.addCage(6, Operation.MULTIPLY, 
-						new Position(2, 1),
-						new Position(2, 2))
-				.addCage(11, Operation.ADD, 
-						new Position(2, 3),
-						new Position(3, 3),
-						new Position(3, 2))
-				.addCage(3, Operation.NONE, 
-						new Position(3, 1))
-				.addCage(9, Operation.ADD, 
-						new Position(3, 4),
-						new Position(3, 5),
-						new Position(4, 3),
-						new Position(4, 4))
-				.addCage(2, Operation.DIVIDE, 
-						new Position(4, 1),
-						new Position(4, 2))
-				.addCage(18, Operation.ADD, 
-						new Position(4, 5),
-						new Position(5, 3),
-						new Position(5, 4),
-						new Position(5, 5))
-				.addCage(8, Operation.ADD, 
-						new Position(5, 0),
-						new Position(5, 1),
-						new Position(5, 2))
-				.build();
-	}
-	
-	public static Puzzle getPuzzle7() {
 		throw new NotImplementedException();
 	}
 	
-	public static Puzzle getPuzzle8() {
+	public static Puzzle getPuzzle7() {
 		throw new NotImplementedException();
 	}
 

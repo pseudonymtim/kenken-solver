@@ -26,9 +26,14 @@ public class BasicSolver implements Solver {
 		// process the groups
 		processGroupsGenSolutions(p.getBespokeGroups());
 		
-		int puzzlePass=1;
+		int puzzlePass = 1;
+		int cellsSolved = 0;
+		int possibleCellValues = 0;
+		int possibleGroupSolutions = 0;
 		
-		while (!p.isSolved()) {
+		boolean progressMade = true;
+		
+		while (!p.isSolved() && progressMade) {
 			
 			refineGroupSolutions(p);
 			
@@ -36,27 +41,37 @@ public class BasicSolver implements Solver {
 				c.updateCellsInSameRowAndColumn();
 			}
 			
-			int cellsSolved = 0;
-			int possibleCellValues = 0;
+			int cellsSolvedThisIteration = 0;
+			int possibleCellValuesThisIteration = 0;
 			for (Cell c : p.getAllCells()) {
 				if (c.isSolved()) {
-					cellsSolved++;
+					cellsSolvedThisIteration++;
 				}
-				possibleCellValues += c.getPossibleValues().size();
+				possibleCellValuesThisIteration += c.getPossibleValues().size();
 			}
 			
-			int possibleGroupSolutions = 0;
+			int possibleGroupSolutionsThisIteration = 0;
 			for (Cage bg : p.getBespokeGroups()) {
-				possibleGroupSolutions += bg.getPossibleSolutions().size();
+				possibleGroupSolutionsThisIteration += bg.getPossibleSolutions().size();
 			}
 			
-			System.out.println(p.toStringDetailed());
-			System.out.println(p.toStringAscii());
-			System.out.println("puzzlePass=" + puzzlePass++
-					+ " cellsSolved=" + cellsSolved
-					+ " possibleCellValues=" + possibleCellValues
-					+ " possibleGroupSolutions=" + possibleGroupSolutions);
+			if (cellsSolved == cellsSolvedThisIteration 
+					&& possibleCellValues == possibleCellValuesThisIteration
+					&& possibleGroupSolutions == possibleGroupSolutionsThisIteration) {
+				progressMade = false;
+			}
+			else {
+				cellsSolved = cellsSolvedThisIteration;
+				possibleCellValues = possibleCellValuesThisIteration;
+				possibleGroupSolutions = possibleGroupSolutionsThisIteration;
+			}
 			
+//			System.out.println(p.toStringDetailed());
+//			System.out.println(p.toStringAscii());
+//			System.out.println("puzzlePass=" + puzzlePass++
+//					+ " cellsSolved=" + cellsSolved
+//					+ " possibleCellValues=" + possibleCellValues
+//					+ " possibleGroupSolutions=" + possibleGroupSolutions);
 		}
 		
 	}
